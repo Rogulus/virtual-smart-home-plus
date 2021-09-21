@@ -9,8 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class BaseRoute extends RouteBuilder {
 
-    protected static AnnotationConfigApplicationContext context =
-            new AnnotationConfigApplicationContext(AppConfig.class);
+    protected AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
 
     @Override
     public void configure() throws Exception {

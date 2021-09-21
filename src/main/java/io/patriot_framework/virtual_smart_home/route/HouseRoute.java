@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class HouseRoute extends BaseRoute {
 
-    protected static House house = context.getBean(House.class);
+    protected House house = context.getBean(House.class);
 
     @Override
     public void configure() throws Exception {

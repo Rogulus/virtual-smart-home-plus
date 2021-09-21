@@ -1,12 +1,8 @@
 package io.patriot_framework.virtual_smart_home.house;
 
-import io.patriot_framework.virtual_smart_home.InitialApplication;
 import io.patriot_framework.virtual_smart_home.house.device.Device;
 import io.patriot_framework.virtual_smart_home.house.device.Fireplace;
-import org.apache.camel.test.spring.CamelSpringBootRunner;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,8 +11,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-@RunWith(CamelSpringBootRunner.class)
-@SpringBootTest(classes = InitialApplication.class)
 public class HouseTest {
 
     House house = new House("house");

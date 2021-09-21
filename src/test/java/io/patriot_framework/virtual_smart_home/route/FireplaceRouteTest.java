@@ -1,21 +1,21 @@
 package io.patriot_framework.virtual_smart_home.route;
 
 import io.restassured.http.ContentType;
-import org.apache.camel.test.spring.CamelSpringBootRunner;
+import org.apache.camel.test.spring.junit5.CamelSpringBootTest;
 import org.apache.catalina.connector.Response;
 import org.hamcrest.Matchers;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 
 import static io.restassured.RestAssured.given;
 
-@RunWith(CamelSpringBootRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT) // TODO: restart endpoint for every test
-public class FireplaceRouteTest {                                            // TODO: (avoid DELETE after each POST)
+@CamelSpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+public class FireplaceRouteTest {
 
     private final String fireplaceEndpoint = "house/device/fireplace";
     private JSONObject defaultFireplaceJson = null;
@@ -77,8 +77,8 @@ public class FireplaceRouteTest {                                            // 
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     public void getUniqueFireplace() throws JSONException {
-        // TODO: how to properly test rest service (POST, GET, DELETE)
         given()
                 .contentType(ContentType.JSON)
                 .body(defaultFireplaceJson.toString())
@@ -87,8 +87,6 @@ public class FireplaceRouteTest {                                            // 
         given()
                 .when().get(fireplaceEndpoint + "/" + defaultFireplaceJson.getString("label"))
                 .then().body(Matchers.equalTo(defaultFireplaceJson.toString()));
-
-        deleteFireplace(defaultFireplaceJson.getString("label"));
     }
 
     // === POST ===
@@ -121,7 +119,8 @@ public class FireplaceRouteTest {                                            // 
     }
 
     @Test
-    public void postRequestConflict() throws JSONException {
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    public void postRequestConflict() {
         given()
                 .contentType(ContentType.JSON)
                 .body(defaultFireplaceJson.toString())
@@ -132,22 +131,20 @@ public class FireplaceRouteTest {                                            // 
                 .body(defaultFireplaceJson.toString())
                 .when().post(fireplaceEndpoint)
                 .then().statusCode(Response.SC_CONFLICT); // 409
-
-        deleteFireplace(defaultFireplaceJson.getString("label"));
     }
 
     @Test
-    public void postRequestStatusCode201() throws JSONException {
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    public void postRequestStatusCode201() {
         given()
                 .contentType(ContentType.JSON)
                 .body(defaultFireplaceJson.toString())
                 .when().post(fireplaceEndpoint)
                 .then().statusCode(Response.SC_CREATED);
-
-        deleteFireplace(defaultFireplaceJson.getString("label"));
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     public void simplePostRequest() throws JSONException {
         given()
                 .contentType(ContentType.JSON)
@@ -158,8 +155,6 @@ public class FireplaceRouteTest {                                            // 
         given()
                 .when().get(fireplaceEndpoint + "/" + defaultFireplaceJson.getString("label"))
                 .then().body(Matchers.equalTo(defaultFireplaceJson.toString()));
-
-        deleteFireplace(defaultFireplaceJson.getString("label"));
     }
 
     // === PUT ===
@@ -183,7 +178,8 @@ public class FireplaceRouteTest {                                            // 
     }
 
     @Test
-    public void putRequestStatusCode200() throws JSONException {
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    public void putRequestStatusCode200() {
         given()
                 .contentType(ContentType.JSON)
                 .body(defaultFireplaceJson.toString())
@@ -194,11 +190,10 @@ public class FireplaceRouteTest {                                            // 
                 .body(defaultFireplaceJson.toString())
                 .when().put(fireplaceEndpoint)
                 .then().statusCode(Response.SC_OK);
-
-        deleteFireplace(defaultFireplaceJson.getString("label"));
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     public void simplePutRequest() throws JSONException {
         given()
                 .contentType(ContentType.JSON)
@@ -216,8 +211,6 @@ public class FireplaceRouteTest {                                            // 
         given()
                 .when().get(fireplaceEndpoint + "/" + defaultFireplaceJson.getString("label"))
                 .then().body(Matchers.equalTo(enabledFireplace.toString()));
-
-        deleteFireplace(defaultFireplaceJson.getString("label"));
     }
 
     // === PATCH ===
@@ -230,7 +223,8 @@ public class FireplaceRouteTest {                                            // 
     }
 
     @Test
-    public void patchRequestStatusCode200() throws JSONException {
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    public void patchRequestStatusCode200() {
         given()
                 .contentType(ContentType.JSON)
                 .body(defaultFireplaceJson.toString())
@@ -241,8 +235,6 @@ public class FireplaceRouteTest {                                            // 
                 .body(defaultFireplaceJson.toString())
                 .when().patch(fireplaceEndpoint)
                 .then().statusCode(Response.SC_OK);
-
-        deleteFireplace(defaultFireplaceJson.getString("label"));
     }
 
     // === DELETE ===
@@ -282,11 +274,5 @@ public class FireplaceRouteTest {                                            // 
                 .param("label", defaultFireplaceJson.get("label"))
                 .when().get(fireplaceEndpoint)
                 .then().body(Matchers.equalTo(new JSONArray().toString()));
-    }
-
-    private void deleteFireplace(String label) { // Cleanup.
-        given()
-                .queryParam("label", label)
-                .delete(fireplaceEndpoint);
     }
 }
