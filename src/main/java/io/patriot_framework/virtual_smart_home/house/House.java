@@ -3,7 +3,6 @@ package io.patriot_framework.virtual_smart_home.house;
 import io.patriot_framework.virtual_smart_home.house.device.Device;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;

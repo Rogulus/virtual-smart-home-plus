@@ -6,6 +6,7 @@ import io.patriot_framework.virtual_smart_home.house.device.Device;
 import io.patriot_framework.virtual_smart_home.house.device.Fireplace;
 import org.apache.camel.Exchange;
 import org.apache.catalina.connector.Response;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -15,26 +16,26 @@ public class FireplaceRoute extends DeviceRoute {
     public void configure() throws Exception {
         rest(getRoute())
                 .get("{label}")
-                    .produces("application/json")
+                    .produces(MediaType.APPLICATION_JSON_VALUE)
                     .to("direct:readFireplace")
 
                 .get()
-                    .produces("application/json")
+                    .produces(MediaType.APPLICATION_JSON_VALUE)
                     .to("direct:readFireplaces")
 
                 .post()
                     .type(Fireplace.class)
-                    .consumes("application/json")
+                    .consumes(MediaType.APPLICATION_JSON_VALUE)
                     .to("direct:createFireplace")
 
                 .put()
                     .type(Fireplace.class)
-                    .consumes("application/json")
+                    .consumes(MediaType.APPLICATION_JSON_VALUE)
                     .to("direct:updateFireplace")
 
                 .patch()
                     .type(Fireplace.class)
-                    .consumes("application/json")
+                    .consumes(MediaType.APPLICATION_JSON_VALUE)
                     .to("direct:updateFireplace")
 
                 .delete()

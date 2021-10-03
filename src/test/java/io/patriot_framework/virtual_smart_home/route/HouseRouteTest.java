@@ -12,28 +12,27 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import static io.restassured.RestAssured.given;
 
-@CamelSpringBootTest
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class HouseRouteTest {
+class HouseRouteTest {
 
     private final String houseEndpoint = "house";
 
     @Test
-    public void contentTypeJSON() {
+    void contentTypeJSON() {
         given()
                 .when().get(houseEndpoint)
                 .then().assertThat().contentType(ContentType.JSON);
     }
 
     @Test
-    public void getRequestStatusCode200() {
+    void getRequestStatusCode200() {
         given()
                 .when().get(houseEndpoint)
                 .then().assertThat().statusCode(Response.SC_OK);
     }
 
     @Test
-    public void emptyGetRequest() throws JSONException {
+    void emptyGetRequest() throws JSONException {
         JSONObject expected = new JSONObject();
         expected.put("houseName", "house").put("devices", new JSONObject());
 
@@ -42,21 +41,4 @@ public class HouseRouteTest {
                 .then().assertThat().body(Matchers.equalTo(expected.toString()));
     }
 
-    @Test
-    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
-    public void simpleGetRequest() throws JSONException {
-        JSONObject defaultFireplaceJson = new JSONObject()
-                .put("label", "fireplace")
-                .put("enabled", false);
-
-        given()
-                .contentType(ContentType.JSON)
-                .body(defaultFireplaceJson.toString())
-                .when().post(houseEndpoint)
-                .then().statusCode(Response.SC_CREATED); // TODO: 404
-
-        given()
-                .when().get(houseEndpoint)
-                .then().body(Matchers.equalTo("OK"));
-    }
 }

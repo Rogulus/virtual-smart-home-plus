@@ -13,9 +13,8 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import static io.restassured.RestAssured.given;
 
-@CamelSpringBootTest
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class FireplaceRouteTest {
+class FireplaceRouteTest {
 
     private final String fireplaceEndpoint = "house/device/fireplace";
     private JSONObject defaultFireplaceJson = null;
@@ -33,28 +32,28 @@ public class FireplaceRouteTest {
     // === GET ===
 
     @Test
-    public void getRequestContentTypeJson() {
+    void getRequestContentTypeJson() {
         given()
                 .when().get(fireplaceEndpoint)
                 .then().contentType(ContentType.JSON);
     }
 
     @Test
-    public void getRequestNotFound() {
+    void getRequestNotFound() {
         given()
                 .when().get(fireplaceEndpoint + "/notFound")
                 .then().statusCode(Response.SC_NOT_FOUND); // 404
     }
 
     @Test
-    public void getRequestNonExistentEndpoint() {
+    void getRequestNonExistentEndpoint() {
         given()
                 .when().get(fireplaceEndpoint + "/nonExistent")
                 .then().body(Matchers.equalTo(""));
     }
 
     @Test
-    public void getRequestWithInvalidParam() {
+    void getRequestWithInvalidParam() {
         given()
                 .param("param", "param")
                 .when().get(fireplaceEndpoint)
@@ -62,14 +61,14 @@ public class FireplaceRouteTest {
     }
 
     @Test
-    public void getRequestStatusCode200() {
+    void getRequestStatusCode200() {
         given()
                 .when().get(fireplaceEndpoint)
                 .then().statusCode(Response.SC_OK);
     }
 
     @Test
-    public void emptyGetRequest() throws JSONException {
+    void emptyGetRequest() throws JSONException {
         given()
                 .param("label", defaultFireplaceJson.get("label"))
                 .when().get(fireplaceEndpoint)
@@ -78,7 +77,7 @@ public class FireplaceRouteTest {
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
-    public void getUniqueFireplace() throws JSONException {
+    void getUniqueFireplace() throws JSONException {
         given()
                 .contentType(ContentType.JSON)
                 .body(defaultFireplaceJson.toString())
@@ -92,14 +91,14 @@ public class FireplaceRouteTest {
     // === POST ===
 
     @Test
-    public void postRequestWithoutBody() {
+    void postRequestWithoutBody() {
         given()
                 .when().post(fireplaceEndpoint)
                 .then().statusCode(Response.SC_BAD_REQUEST); // 400
     }
 
     @Test
-    public void postRequestWithIncorrectJsonBody() throws JSONException {
+    void postRequestWithIncorrectJsonBody() throws JSONException {
         JSONObject invalidRequestBody = new JSONObject().put("json", "json");
 
         given()
@@ -110,7 +109,7 @@ public class FireplaceRouteTest {
     }
 
     @Test
-    public void postRequestWithNonJsonBody() {
+    void postRequestWithNonJsonBody() {
         given()
                 .contentType(ContentType.TEXT)
                 .body("body")
@@ -120,7 +119,7 @@ public class FireplaceRouteTest {
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
-    public void postRequestConflict() {
+    void postRequestConflict() {
         given()
                 .contentType(ContentType.JSON)
                 .body(defaultFireplaceJson.toString())
@@ -135,7 +134,7 @@ public class FireplaceRouteTest {
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
-    public void postRequestStatusCode201() {
+    void postRequestStatusCode201() {
         given()
                 .contentType(ContentType.JSON)
                 .body(defaultFireplaceJson.toString())
@@ -145,7 +144,7 @@ public class FireplaceRouteTest {
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
-    public void simplePostRequest() throws JSONException {
+    void simplePostRequest() throws JSONException {
         given()
                 .contentType(ContentType.JSON)
                 .body(defaultFireplaceJson.toString())
@@ -160,14 +159,14 @@ public class FireplaceRouteTest {
     // === PUT ===
 
     @Test
-    public void putRequestWithoutBody() {
+    void putRequestWithoutBody() {
         given()
                 .when().put(fireplaceEndpoint)
                 .then().statusCode(Response.SC_BAD_REQUEST); // 400
     }
 
     @Test
-    public void putRequestWithInvalidBody() throws JSONException {
+    void putRequestWithInvalidBody() throws JSONException {
         JSONObject invalidRequestBody = new JSONObject().put("json", "json");
 
         given()
@@ -179,7 +178,7 @@ public class FireplaceRouteTest {
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
-    public void putRequestStatusCode200() {
+    void putRequestStatusCode200() {
         given()
                 .contentType(ContentType.JSON)
                 .body(defaultFireplaceJson.toString())
@@ -194,7 +193,7 @@ public class FireplaceRouteTest {
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
-    public void simplePutRequest() throws JSONException {
+    void simplePutRequest() throws JSONException {
         given()
                 .contentType(ContentType.JSON)
                 .body(defaultFireplaceJson.toString())
@@ -216,7 +215,7 @@ public class FireplaceRouteTest {
     // === PATCH ===
 
     @Test
-    public void patchRequestWithoutBody() {
+    void patchRequestWithoutBody() {
         given()
                 .when().patch(fireplaceEndpoint)
                 .then().statusCode(Response.SC_BAD_REQUEST); // 400
@@ -224,7 +223,7 @@ public class FireplaceRouteTest {
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
-    public void patchRequestStatusCode200() {
+    void patchRequestStatusCode200() {
         given()
                 .contentType(ContentType.JSON)
                 .body(defaultFireplaceJson.toString())
@@ -240,14 +239,14 @@ public class FireplaceRouteTest {
     // === DELETE ===
 
     @Test
-    public void deleteRequestWithoutQueryParam() {
+    void deleteRequestWithoutQueryParam() {
         given()
                 .when().delete(fireplaceEndpoint)
                 .then().statusCode(Response.SC_BAD_REQUEST); // 400
     }
 
     @Test
-    public void deleteRequestStatusCode200() throws JSONException {
+    void deleteRequestStatusCode200() throws JSONException {
         given()
                 .contentType(ContentType.JSON)
                 .body(defaultFireplaceJson.toString())
@@ -260,7 +259,7 @@ public class FireplaceRouteTest {
     }
 
     @Test
-    public void simpleDeleteRequest() throws JSONException {
+    void simpleDeleteRequest() throws JSONException {
         given()
                 .contentType(ContentType.JSON)
                 .body(defaultFireplaceJson.toString())

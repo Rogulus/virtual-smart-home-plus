@@ -13,37 +13,35 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import static io.restassured.RestAssured.given;
 
-@CamelSpringBootTest
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class DeviceRouteTest {
+class DeviceRouteTest {
 
     private final String deviceEndpoint = "house/device";
 
     @Test
-    public void getRequestContentTypeJson() {
+    void getRequestContentTypeJson() {
         given()
                 .when().get(deviceEndpoint)
                 .then().contentType(ContentType.JSON);
     }
 
     @Test
-    public void getRequestStatusCode200() {
+    void getRequestStatusCode200() {
         given()
                 .when().get(deviceEndpoint)
                 .then().statusCode(Response.SC_OK);
     }
 
     @Test
-    public void emptyGetRequest() {
+    void emptyGetRequest() {
         given()
                 .when().get(deviceEndpoint)
                 .then().body(Matchers.equalTo(new JSONObject().toString()));
     }
 
     @Test
-//    @Disabled("Failing") // TODO: How to test this if it's not working?
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
-    public void simpleGetRequest() throws JSONException {
+    void simpleGetRequest() throws JSONException {
         JSONObject defaultFireplaceJson = new JSONObject()
                 .put("label", "fireplace")
                 .put("enabled", false);
