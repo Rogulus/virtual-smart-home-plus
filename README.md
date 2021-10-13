@@ -26,3 +26,16 @@ situation you can find container's IP with.
 $ docker container list
 $ docker inspect <container_ID> | grep "IPAddress"
 ```
+
+## Surefire HTML reports
+
+If you wish to generate HTML reports containing easier to read test results
+and overview of project dependencies. Keep in mind it will take a few minutes.
+You can do so with:
+
+```console
+$ mvn clean site
+```
+
+This command will generate HTML files containing report in
+<code>/target/site</code> folder.
