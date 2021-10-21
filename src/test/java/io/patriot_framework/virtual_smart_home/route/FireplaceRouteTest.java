@@ -1,10 +1,7 @@
 package io.patriot_framework.virtual_smart_home.route;
 
 import io.restassured.http.ContentType;
-import org.apache.camel.test.spring.junit5.CamelSpringBootTest;
-import org.apache.catalina.connector.Response;
 import org.hamcrest.Matchers;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
@@ -13,8 +10,9 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import static io.restassured.RestAssured.given;
 
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-class FireplaceRouteTest {
+class FireplaceRouteTest extends DeviceRouteBase {
 
     private final String fireplaceEndpoint = "house/device/fireplace";
     private JSONObject defaultFireplaceJson = null;
@@ -30,169 +28,93 @@ class FireplaceRouteTest {
     }
 
     // === GET ===
-
     @Test
     void getRequestContentTypeJson() {
-        given()
-                .when().get(fireplaceEndpoint)
-                .then().contentType(ContentType.JSON);
+        super.getRequestContentTypeJson(fireplaceEndpoint);
     }
 
     @Test
     void getRequestNotFound() {
-        given()
-                .when().get(fireplaceEndpoint + "/notFound")
-                .then().statusCode(Response.SC_NOT_FOUND); // 404
+        super.getRequestNotFound(fireplaceEndpoint);
     }
 
     @Test
     void getRequestNonExistentEndpoint() {
-        given()
-                .when().get(fireplaceEndpoint + "/nonExistent")
-                .then().body(Matchers.equalTo(""));
+        super.getRequestNonExistentEndpoint(fireplaceEndpoint);
     }
 
     @Test
     void getRequestWithInvalidParam() {
-        given()
-                .param("param", "param")
-                .when().get(fireplaceEndpoint)
-                .then().body(Matchers.equalTo(new JSONArray().toString()));
+        super.getRequestWithInvalidParam(fireplaceEndpoint);
     }
 
     @Test
     void getRequestStatusCode200() {
-        given()
-                .when().get(fireplaceEndpoint)
-                .then().statusCode(Response.SC_OK);
+        super.getRequestStatusCode200(fireplaceEndpoint);
     }
 
     @Test
     void emptyGetRequest() throws JSONException {
-        given()
-                .param("label", defaultFireplaceJson.get("label"))
-                .when().get(fireplaceEndpoint)
-                .then().body(Matchers.equalTo(new JSONArray().toString()));
+        super.emptyGetRequest(fireplaceEndpoint, defaultFireplaceJson);
     }
 
     @Test
-    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void getUniqueFireplace() throws JSONException {
-        given()
-                .contentType(ContentType.JSON)
-                .body(defaultFireplaceJson.toString())
-                .post(fireplaceEndpoint);
-
-        given()
-                .when().get(fireplaceEndpoint + "/" + defaultFireplaceJson.getString("label"))
-                .then().body(Matchers.equalTo(defaultFireplaceJson.toString()));
+        super.getUniqueDevice(fireplaceEndpoint, defaultFireplaceJson);
     }
 
     // === POST ===
-
     @Test
     void postRequestWithoutBody() {
-        given()
-                .when().post(fireplaceEndpoint)
-                .then().statusCode(Response.SC_BAD_REQUEST); // 400
+        super.postRequestWithoutBody(fireplaceEndpoint);
     }
 
     @Test
-    void postRequestWithIncorrectJsonBody() throws JSONException {
+    void postRequestWithInvalidJsonBody() throws JSONException {
         JSONObject invalidRequestBody = new JSONObject().put("json", "json");
 
-        given()
-                .contentType(ContentType.JSON)
-                .body(invalidRequestBody.toString())
-                .when().post(fireplaceEndpoint)
-                .then().statusCode(Response.SC_BAD_REQUEST); // 400
+        super.postRequestWithInvalidJsonBody(fireplaceEndpoint, invalidRequestBody);
     }
 
     @Test
     void postRequestWithNonJsonBody() {
-        given()
-                .contentType(ContentType.TEXT)
-                .body("body")
-                .when().post(fireplaceEndpoint)
-                .then().statusCode(Response.SC_BAD_REQUEST); // 400
+        super.postRequestWithNonJsonBody(fireplaceEndpoint);
     }
 
     @Test
-    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void postRequestConflict() {
-        given()
-                .contentType(ContentType.JSON)
-                .body(defaultFireplaceJson.toString())
-                .post(fireplaceEndpoint);
-
-        given()
-                .contentType(ContentType.JSON)
-                .body(defaultFireplaceJson.toString())
-                .when().post(fireplaceEndpoint)
-                .then().statusCode(Response.SC_CONFLICT); // 409
+        super.postRequestConflict(fireplaceEndpoint, defaultFireplaceJson);
     }
 
     @Test
-    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void postRequestStatusCode201() {
-        given()
-                .contentType(ContentType.JSON)
-                .body(defaultFireplaceJson.toString())
-                .when().post(fireplaceEndpoint)
-                .then().statusCode(Response.SC_CREATED);
+        super.postRequestStatusCode201(fireplaceEndpoint, defaultFireplaceJson);
     }
 
     @Test
-    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void simplePostRequest() throws JSONException {
-        given()
-                .contentType(ContentType.JSON)
-                .body(defaultFireplaceJson.toString())
-                .when().post(fireplaceEndpoint)
-                .then().body(Matchers.equalTo(defaultFireplaceJson.toString()));
-
-        given()
-                .when().get(fireplaceEndpoint + "/" + defaultFireplaceJson.getString("label"))
-                .then().body(Matchers.equalTo(defaultFireplaceJson.toString()));
+        super.simplePostRequest(fireplaceEndpoint, defaultFireplaceJson);
     }
 
     // === PUT ===
-
     @Test
     void putRequestWithoutBody() {
-        given()
-                .when().put(fireplaceEndpoint)
-                .then().statusCode(Response.SC_BAD_REQUEST); // 400
+        super.putRequestWithoutBody(fireplaceEndpoint);
     }
 
     @Test
-    void putRequestWithInvalidBody() throws JSONException {
+    void putRequestWithInvalidJsonBody() throws JSONException {
         JSONObject invalidRequestBody = new JSONObject().put("json", "json");
 
-        given()
-                .contentType(ContentType.JSON)
-                .body(invalidRequestBody.toString())
-                .when().put(fireplaceEndpoint)
-                .then().statusCode(Response.SC_BAD_REQUEST); // 400
+        super.putRequestWithInvalidJsonBody(fireplaceEndpoint, invalidRequestBody);
     }
 
     @Test
-    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void putRequestStatusCode200() {
-        given()
-                .contentType(ContentType.JSON)
-                .body(defaultFireplaceJson.toString())
-                .post(fireplaceEndpoint);
-
-        given() 
-                .contentType(ContentType.JSON)
-                .body(defaultFireplaceJson.toString())
-                .when().put(fireplaceEndpoint)
-                .then().statusCode(Response.SC_OK);
+        super.putRequestStatusCode200(fireplaceEndpoint, defaultFireplaceJson);
     }
 
     @Test
-    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void simplePutRequest() throws JSONException {
         given()
                 .contentType(ContentType.JSON)
@@ -213,65 +135,29 @@ class FireplaceRouteTest {
     }
 
     // === PATCH ===
-
     @Test
     void patchRequestWithoutBody() {
-        given()
-                .when().patch(fireplaceEndpoint)
-                .then().statusCode(Response.SC_BAD_REQUEST); // 400
+        super.patchRequestWithoutBody(fireplaceEndpoint);
     }
 
     @Test
-    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void patchRequestStatusCode200() {
-        given()
-                .contentType(ContentType.JSON)
-                .body(defaultFireplaceJson.toString())
-                .post(fireplaceEndpoint);
-
-        given()
-                .contentType(ContentType.JSON)
-                .body(defaultFireplaceJson.toString())
-                .when().patch(fireplaceEndpoint)
-                .then().statusCode(Response.SC_OK);
+        super.patchRequestStatusCode200(fireplaceEndpoint, defaultFireplaceJson);
     }
 
     // === DELETE ===
-
     @Test
     void deleteRequestWithoutQueryParam() {
-        given()
-                .when().delete(fireplaceEndpoint)
-                .then().statusCode(Response.SC_BAD_REQUEST); // 400
+        super.deleteRequestWithoutQueryParam(fireplaceEndpoint);
     }
 
     @Test
     void deleteRequestStatusCode200() throws JSONException {
-        given()
-                .contentType(ContentType.JSON)
-                .body(defaultFireplaceJson.toString())
-                .post(fireplaceEndpoint);
-
-        given()
-                .queryParam("label", defaultFireplaceJson.getString("label"))
-                .when().delete(fireplaceEndpoint)
-                .then().statusCode(Response.SC_OK);
+        super.deleteRequestStatusCode200(fireplaceEndpoint, defaultFireplaceJson);
     }
 
     @Test
     void simpleDeleteRequest() throws JSONException {
-        given()
-                .contentType(ContentType.JSON)
-                .body(defaultFireplaceJson.toString())
-                .post(fireplaceEndpoint);
-
-        given()
-                .param("label", defaultFireplaceJson.get("label"))
-                .delete(fireplaceEndpoint);
-
-        given()
-                .param("label", defaultFireplaceJson.get("label"))
-                .when().get(fireplaceEndpoint)
-                .then().body(Matchers.equalTo(new JSONArray().toString()));
+        super.simpleDeleteRequest(fireplaceEndpoint, defaultFireplaceJson);
     }
 }
