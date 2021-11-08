@@ -5,6 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
+/**
+ * House endpoint which allows HTTP GET request only and returns information
+ * about the whole {@code House} object.
+ */
 @Component
 public class HouseRoute extends BaseRoute {
 

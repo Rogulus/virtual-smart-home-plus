@@ -3,6 +3,10 @@ package io.patriot_framework.virtual_smart_home.route;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
+/**
+ * Device endpoint which allows HTTP GET request only and returns information
+ * about all devices.
+ */
 @Component
 public class DeviceRoute extends HouseRoute {
 

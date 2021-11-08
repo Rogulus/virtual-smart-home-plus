@@ -6,6 +6,9 @@ import org.apache.camel.model.rest.RestBindingMode;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Component;
 
+/**
+ * Routing configuration for localhost:8080.
+ */
 @Component
 public class BaseRoute extends RouteBuilder {
 

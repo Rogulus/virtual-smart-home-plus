@@ -7,6 +7,9 @@ import org.apache.camel.Exchange;
 import org.apache.catalina.connector.Response;
 import org.springframework.http.MediaType;
 
+/**
+ * REST API base class for device routes.
+ */
 public abstract class AbstractDeviceRoute extends HouseRoute {
 
     private String endpoint;
@@ -17,6 +20,10 @@ public abstract class AbstractDeviceRoute extends HouseRoute {
         this.deviceType = deviceType;
     }
 
+    /**
+     * REST API configuration.
+     * Any issue related to JSON parsing returns status code 400 (Bad Request).
+     */
     @Override
     public void configure() {
         rest(getRoute())
@@ -60,6 +67,13 @@ public abstract class AbstractDeviceRoute extends HouseRoute {
         handleDelete();
     }
 
+    /**
+     * HTTP GET request handling.
+     *
+     * Successful request returns JSON for a specific device or JSON array
+     * of all devices of certain type. Otherwise, a 404 status code (Not Found)
+     * is returned.
+     */
     private void handleGet() {
         from("direct:read" + endpoint)
                 .routeId("read-" + endpoint + "-route")
@@ -80,6 +94,14 @@ public abstract class AbstractDeviceRoute extends HouseRoute {
                 .endRest();
     }
 
+    /**
+     * HTTP POST request handling.
+     *
+     * Successful request creates an object of a certain type and returns
+     * status code 201 (Created). If there is a conflict, status code 409
+     * (Conflict) is returned. Otherwise, the request is considered invalid
+     * and status code 400 (Bad Request) is returned.
+     */
     private void handlePost() {
         from("direct:create" + endpoint)
                 .routeId("create-" + endpoint + "-route")
@@ -109,6 +131,14 @@ public abstract class AbstractDeviceRoute extends HouseRoute {
                 .endRest();
     }
 
+    /**
+     * HTTP PUT/PATCH request handling.
+     *
+     * Successful request updates an object of a certain type. If an object is
+     * not found, status code 404 (Not Found) is returned. Otherwise,
+     * the request is considered invalid and status code 400 (Bad Request) is
+     * returned.
+     */
     private void handlePut() {
         from("direct:update" + endpoint)
                 .routeId("update-" + endpoint + "-route")
@@ -137,6 +167,14 @@ public abstract class AbstractDeviceRoute extends HouseRoute {
                 .endRest();
     }
 
+    /**
+     * HTTP DELETE request handling.
+     *
+     * Successful request deletes an object of a certain type. If an object is
+     * not found, status code 404 (Not Found) is returned. Otherwise,
+     * the request is considered invalid and status code 400 (Bad Request) is
+     * returned.
+     */
     private void handleDelete() {
         from("direct:delete" + endpoint)
                 .routeId("delete-" + endpoint + "-route")
