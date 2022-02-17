@@ -54,7 +54,10 @@
         <module name="InterfaceIsType"/>
         <module name="MutableException"/>
         <module name="OneTopLevelClass"/>
-        <module name="VisibilityModifier"/>
+        <module name="VisibilityModifier">
+            <property name="ignoreAnnotationCanonicalNames" value=
+            "Autowired"/>
+        </module>
 
         <!-- Checks for coding problems.                              -->
         <!-- See https://checkstyle.sourceforge.io/config_coding.html -->
@@ -88,7 +91,7 @@
         <!-- Checks for Size Violations.                    -->
         <!-- See http://checkstyle.sf.net/config_sizes.html -->
         <module name="MethodLength">
-            <property name="max" value="30"/>   <!-- TODO Perhaps 30 lines is too little ? -->
+            <property name="max" value="50"/>
             <property name="countEmpty" value="false"/>
         </module>
 

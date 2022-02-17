@@ -94,8 +94,8 @@ public abstract class AbstractDeviceRoute extends HouseRoute {
         from("direct:read" + endpoint)
                 .routeId("read-" + endpoint + "-route")
                 .process(exchange -> {
-                    String label = exchange.getMessage().getHeader("label").toString();
-                    Device retrievedDevice = house.getDevicesOfType(deviceType).get(label);
+                    final String label = exchange.getMessage().getHeader("label").toString();
+                    final Device retrievedDevice = house.getDevicesOfType(deviceType).get(label);
                     exchange.getMessage().setBody(retrievedDevice);
 
                     if (retrievedDevice == null) {
@@ -124,8 +124,10 @@ public abstract class AbstractDeviceRoute extends HouseRoute {
                 .choice()
                     .when(body().isNotNull())
                         .process(exchange -> {
-                            Device deviceToAdd = exchange.getMessage().getBody(deviceType);
-                            Device checkForConflict = house.getDevicesOfType(deviceType).get(deviceToAdd.getLabel());
+                            final Device deviceToAdd = exchange.getMessage().getBody(deviceType);
+                            final Device checkForConflict = house
+                                    .getDevicesOfType(deviceType)
+                                    .get(deviceToAdd.getLabel());
 
                             if (checkForConflict != null) {
                                 exchange.getMessage().setHeader(Exchange.HTTP_RESPONSE_CODE, Response.SC_CONFLICT);
@@ -161,8 +163,10 @@ public abstract class AbstractDeviceRoute extends HouseRoute {
                 .choice()
                     .when(body().isNotNull())
                         .process(exchange -> {
-                            Device deviceToUpdate = exchange.getMessage().getBody(deviceType);
-                            Device checkIfExists = house.getDevicesOfType(deviceType).get(deviceToUpdate.getLabel());
+                            final Device deviceToUpdate = exchange.getMessage().getBody(deviceType);
+                            final Device checkIfExists = house
+                                    .getDevicesOfType(deviceType)
+                                    .get(deviceToUpdate.getLabel());
 
                             if (checkIfExists == null) {
                                 exchange.getMessage().setHeader(Exchange.HTTP_RESPONSE_CODE, Response.SC_NOT_FOUND);
@@ -197,8 +201,8 @@ public abstract class AbstractDeviceRoute extends HouseRoute {
                 .choice()
                     .when(header("label").isNotNull())
                         .process(exchange -> {
-                            String label = exchange.getMessage().getHeader("label").toString();
-                            Device deviceToDelete = house.getDevicesOfType(deviceType).get(label);
+                            final String label = exchange.getMessage().getHeader("label").toString();
+                            final Device deviceToDelete = house.getDevicesOfType(deviceType).get(label);
 
                             if (deviceToDelete == null) {
                                 exchange.getMessage().setHeader(Exchange.HTTP_RESPONSE_CODE, Response.SC_NOT_FOUND);

@@ -28,7 +28,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class BaseRoute extends RouteBuilder {
 
-    protected AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+    private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
 
     @Override
     public void configure() throws Exception {
