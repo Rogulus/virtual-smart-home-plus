@@ -35,6 +35,6 @@ public class BaseRoute extends RouteBuilder {
         restConfiguration()
                 .component("servlet")
                 .host("localhost").port(8080)
-                .bindingMode(RestBindingMode.auto);
+                .bindingMode(RestBindingMode.json);
     }
 }

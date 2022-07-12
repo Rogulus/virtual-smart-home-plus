@@ -7,3 +7,13 @@ target/
 mvnw
 mvnw.cmd
 HELP.md
+
+bin/*
+
+#ignore NetBeans files
+nbactions.xml
+
+#ignore Eclipse files
+.project
+.classpath
+.settings/*
