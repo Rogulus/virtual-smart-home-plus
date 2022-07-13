@@ -14,4 +14,15 @@
 #     limitations under the License.
 #
 
-house.name=house
+camel:
+    component:
+        servlet:
+            mapping:
+                context-path: /*
+
+server:
+    port: 8080
+    host: localhost
+    
+house:
+    name: house

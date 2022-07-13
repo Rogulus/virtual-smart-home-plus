@@ -21,6 +21,7 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.rest.RestBindingMode;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  * Routing configuration for localhost:8080.
@@ -29,12 +30,16 @@ import org.springframework.stereotype.Component;
 public class BaseRoute extends RouteBuilder {
 
     private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+    @Value("${server.port}")
+    private String port;
+    @Value("${server.host}")
+    private String host;
 
     @Override
     public void configure() throws Exception {
         restConfiguration()
                 .component("servlet")
-                .host("localhost").port(8080)
+                .host(host).port(port)
                 .bindingMode(RestBindingMode.json);
     }
 }
