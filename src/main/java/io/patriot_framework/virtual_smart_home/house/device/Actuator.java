@@ -15,12 +15,15 @@
  */
 
 package io.patriot_framework.virtual_smart_home.house.device;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Simple Device type with ability to manipulate state (enabled/disabled) of {@code Device}
  */
 public class Actuator extends Device {
 
+    public static final Logger LOGGER = LogManager.getLogger();
     private boolean enabled = false;
 
     public Actuator(String label) {
@@ -42,6 +45,8 @@ public class Actuator extends Device {
      * @param enabled boolean parameter determining if actuator is running or if it's disabled
      */
     public void setEnabled(boolean enabled) {
+        LOGGER.debug(String.format("Actuator with label:%s set from state enabled:%s to state enabled:%s",
+                this.getLabel(), this.enabled, enabled));
         this.enabled = enabled;
     }
 }

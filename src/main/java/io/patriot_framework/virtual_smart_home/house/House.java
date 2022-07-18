@@ -22,17 +22,21 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * House class is responsible for management of {@code Device} used in the Virtual Smart Home
  */
 public final class House {
 
+    public static final Logger LOGGER = LogManager.getLogger();
     private String houseName;
     private Map<String, Device> devices = new ConcurrentHashMap<>();
 
     public House(String houseName) {
         this.houseName = houseName;
+        LOGGER.debug(String.format("Created new house with name \"%s\"",this.houseName));
     }
 
     /**
@@ -43,6 +47,7 @@ public final class House {
      */
     public void addDevice(String label, Device device) {
         devices.put(label, device);
+        LOGGER.debug(String.format("Device %s with label %s added to house %s", device, label, this.houseName));
     }
 
     /**
@@ -62,7 +67,14 @@ public final class House {
      * @param device instance of new device with given label
      */
     public void updateDevice(String label, Device device) {
-        devices.put(label, device);
+        final Device origDevice = devices.put(label, device);
+        if(origDevice == null){
+            LOGGER.warn(String.format("Device with label:%s does not exist in house:%s."
+                    + " Adding new device:%s.", label, houseName, device));
+        } else{
+            LOGGER.debug(String.format("At house:%s device with label:%s updated. "
+                    + "(Device:%s replaced by:%s", houseName, label, origDevice, device));
+        }
     }
 
     /**
@@ -71,7 +83,12 @@ public final class House {
      * @param label label of device to be removed
      */
     public void removeDevice(String label) {
-        devices.remove(label);
+        final Device origDevice = devices.remove(label);
+        if(origDevice == null){
+            LOGGER.warn(String.format("Removing non-existing device with label:%s from house:%s)", label, houseName));
+        } else{
+            LOGGER.debug(String.format("At house:%s device:%s with label:%s removed.", houseName, origDevice, label));
+        }
     }
 
     /**
@@ -101,6 +118,7 @@ public final class House {
      * @param houseName string with house name
      */
     public void setHouseName(String houseName) { // TODO: Remove?
+        LOGGER.debug(String.format("House with name:%s renamed to:%s", this.houseName, houseName));
         this.houseName = houseName;
     }
 
@@ -119,6 +137,8 @@ public final class House {
      * @param devices map of devices and their labels
      */
     public void setDevices(Map<String, Device> devices) { // TODO: ?
+        LOGGER.debug(String.format("At house:%s devices:%s set instead of devices:%s",
+                houseName, devices, this.devices));
         this.devices = devices;
     }
 }

@@ -16,15 +16,20 @@
 
 package io.patriot_framework.virtual_smart_home.house.device;
 
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 /**
  * Main representation of the device used in {@code House}
  */
 public abstract class Device {
 
+    public static final Logger LOGGER = LogManager.getLogger();
     private final String label;
 
     public Device(String label) {
         this.label = label;
+        LOGGER.debug(String.format("Created new device with label \"%s\"", label));
     }
 
     /**
