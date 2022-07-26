@@ -18,6 +18,8 @@ package io.patriot_framework.virtual_smart_home.house.device;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiModelProperty.AccessMode;
 
 /**
  * Main representation of the device used in {@code House}
@@ -25,6 +27,7 @@ import org.apache.logging.log4j.LogManager;
 public abstract class Device {
 
     public static final Logger LOGGER = LogManager.getLogger();
+    @ApiModelProperty(accessMode = AccessMode.READ_WRITE)
     private final String label;
 
     public Device(String label) {

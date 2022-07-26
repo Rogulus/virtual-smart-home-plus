@@ -81,7 +81,7 @@ public class DeviceRouteBase {
     void postRequestWithoutBody(String endpoint) {
         given()
                 .when().post(endpoint)
-                .then().statusCode(Response.SC_BAD_REQUEST); // 400
+                .then().statusCode(Response.SC_UNSUPPORTED_MEDIA_TYPE); // 415
     }
 
     void postRequestWithInvalidJsonBody(String endpoint, JSONObject body) {
@@ -97,7 +97,7 @@ public class DeviceRouteBase {
                 .contentType(ContentType.TEXT)
                 .body("body")
                 .when().post(endpoint)
-                .then().statusCode(Response.SC_BAD_REQUEST); // 400
+                .then().statusCode(Response.SC_UNSUPPORTED_MEDIA_TYPE); // 415
     }
 
     void postRequestConflict(String endpoint, JSONObject body) {
