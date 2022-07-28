@@ -22,10 +22,13 @@ import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class HouseTest {
 
@@ -45,7 +48,13 @@ public class HouseTest {
         devices.put("fireplace", fireplace);
         house.setDevices(devices);
         house.removeDevice("fireplace");
-        assertThat(house.getDevice("fireplace"), equalTo(null));
+        Exception exception = assertThrows(NoSuchElementException.class, () -> {
+            house.getDevice("fireplace");
+        });
+
+        String expectedMessage = "Device with label: fireplace is not present in the house";
+        String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
     }
 
     @Test
