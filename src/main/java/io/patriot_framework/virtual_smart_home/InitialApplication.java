@@ -22,7 +22,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class InitialApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(InitialApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(InitialApplication.class, args);
+    }
 }

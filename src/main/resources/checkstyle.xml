@@ -107,10 +107,15 @@
         </module>
         <module name="RightCurly"/>
 
+	<!-- Checks for whitespaces.					  -->
+	<!-- See https://checkstyle.sourceforge.io/config_whitespace.html -->
+	<module name="WhitespaceAround"/>
+
         <!-- Checks for miscellaneous code style criteria.          -->
         <!-- See https://checkstyle.sourceforge.io/config_misc.html -->
         <module name="ArrayTypeStyle"/>
         <module name="CommentsIndentation"/>
+	<module name="Indentation"/>
     </module>
 
     <!-- Checks whether files end with a new line.                        -->
