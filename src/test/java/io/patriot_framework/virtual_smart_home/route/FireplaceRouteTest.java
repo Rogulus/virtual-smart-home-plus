@@ -93,6 +93,13 @@ class FireplaceRouteTest extends DeviceRouteBase {
     }
 
     @Test
+    void postRequestWithEmptyJson() throws JSONException {
+        JSONObject invalidRequestBody = new JSONObject();
+
+        super.postRequestWithInvalidJsonBody(fireplaceEndpoint, invalidRequestBody);
+    }
+
+    @Test
     void postRequestWithNonJsonBody() {
         super.postRequestWithNonJsonBody(fireplaceEndpoint);
     }
