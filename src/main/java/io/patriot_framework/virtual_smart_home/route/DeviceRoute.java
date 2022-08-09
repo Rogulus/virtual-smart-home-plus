@@ -37,7 +37,7 @@ public class DeviceRoute extends HouseRoute {
                 .produces(MediaType.APPLICATION_JSON_VALUE)
                 .route()
                 .process(exchange -> exchange.getMessage().setBody(house.getDevices()))
-        .endRest();
+            .endRest();
     }
 
     @Override

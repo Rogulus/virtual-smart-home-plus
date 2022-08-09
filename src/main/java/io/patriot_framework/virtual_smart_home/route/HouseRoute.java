@@ -40,7 +40,7 @@ public class HouseRoute extends BaseRoute {
                 .produces(MediaType.APPLICATION_JSON_VALUE)
                 .route()
                 .process(exchange -> exchange.getMessage().setBody(house))
-        .endRest();
+            .endRest();
     }
 
     protected String getRoute() {

@@ -20,6 +20,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import io.patriot_framework.virtual_smart_home.house.device.Device;
 import org.apache.camel.Exchange;
+import org.apache.camel.model.rest.RestDefinition;
 import org.apache.camel.model.rest.RestParamType;
 import static org.apache.camel.model.rest.RestParamType.path;
 import org.apache.catalina.connector.Response;
@@ -44,82 +45,12 @@ public abstract class AbstractDeviceRoute extends HouseRoute {
      */
     @Override
     public void configure() {
-        rest(getRoute())
-                .get("{label}")
-                    .description(String.format("Returns basic info about %s with given label", endpoint))
-                    .outType(deviceType)
-                    .param().name("label").type(path).description(String.format("The label of the %s to get", endpoint))
-                        .endParam()
-                    .responseMessage().code(200).message(String.format("Basic info about %s returned", endpoint))
-                        .endResponseMessage()
-                    .responseMessage().code(404).message(
-                        String.format("%s with given label isn't present in the house",
-                        endpoint.substring(0,1).toUpperCase() + endpoint.substring(1))).endResponseMessage()
-                    .produces(MediaType.APPLICATION_JSON_VALUE)
-                    .to("direct:read" + endpoint)
-
-                .get()
-                    .description(String.format("Returns array of all %ss",endpoint))
-                    .outType(deviceType)    //TODO for java version >= 12 .outType(deviceType.arrayType())
-                    .responseMessage().code(200).message(String.format("Basic info about all %ss returned", endpoint))
-                        .endResponseMessage()
-                    .produces(MediaType.APPLICATION_JSON_VALUE)
-                    .to("direct:read" + endpoint + "s")
-
-                .post()
-                    .consumes(MediaType.APPLICATION_JSON_VALUE)
-                    .description(String.format("Add new %s to the house", endpoint))
-                    .type(deviceType)
-                    .param().name("body").description("Object, that needs to be added to the house."
-                            + " Label must be unique identifier among the devices in the house.").endParam()
-                    .outType(deviceType)
-                    .responseMessage().code(201).message(String.format("%s added", endpoint))
-                        .endResponseMessage()
-                    .responseMessage().code(400).message("Invalid body").endResponseMessage()
-                    .responseMessage().code(409).message(
-                        String.format("Device %s with given label already exists ", endpoint))
-                        .endResponseMessage()
-                    .to("direct:create" + endpoint)
-
-                .put()
-                    .description(String.format("Update an existing %s", endpoint))
-                    .type(deviceType)
-                    .param().name("body").description("Object, that needs to be updated in the house."
-                            + " Label is identifier of the updated device.").endParam()
-                    .outType(deviceType)
-                    .responseMessage().code(200).message(String.format("%s updated",
-                        endpoint.substring(0,1).toUpperCase()+endpoint.substring(1))).endResponseMessage()
-                    .responseMessage().code(400).message("Invalid body").endResponseMessage()
-                    .responseMessage().code(404).message(String.format("%s with given label isn't present"
-                        + " in the house", endpoint.substring(0,1).toUpperCase() + endpoint.substring(1)))
-                        .endResponseMessage()
-                    .consumes(MediaType.APPLICATION_JSON_VALUE)
-                    .to("direct:update" + endpoint)
-
-                .patch()
-                    .description(String.format("Update an existing %s (same as put)",endpoint))
-                    .type(deviceType)
-                    .param().name("body").description("Object, that needs to be updated in the house."
-                            + " Label is identifier of the updated device.").endParam()
-                    .outType(deviceType)
-                    .responseMessage().code(200).message(String.format("%s updated",
-                        endpoint.substring(0,1).toUpperCase()+endpoint.substring(1))).endResponseMessage()
-                    .responseMessage().code(400).message("Invalid body").endResponseMessage()
-                    .responseMessage().code(404).message(String.format("%s with given label isn't present in the house",
-                        endpoint.substring(0,1).toUpperCase()+endpoint.substring(1))).endResponseMessage()
-                    .consumes(MediaType.APPLICATION_JSON_VALUE)
-                    .to("direct:update" + endpoint)
-
-                .delete()
-                    .description(String.format("Deletes a %s with given label", endpoint))
-                    .param().name("label").type(RestParamType.header).required(Boolean.TRUE)
-                        .description("Label of the device").endParam()
-                    .responseMessage().code(200).message(String.format("%s deleted",
-                        endpoint.substring(0,1).toUpperCase() + endpoint.substring(1))).endResponseMessage()
-                    .responseMessage().code(400).message("Header label is missing").endResponseMessage()
-                    .responseMessage().code(404).message(String.format("%s with given label isn't present in the house",
-                            endpoint.substring(0,1).toUpperCase() + endpoint.substring(1))).endResponseMessage()
-                    .to("direct:delete" + endpoint);
+        final RestDefinition rd = rest(getRoute());
+        buildGet(rd);
+        buildPost(rd);
+        buildPut(rd);
+        buildPatch(rd);
+        buildDelete(rd);
 
         onException(UnrecognizedPropertyException.class)
                 .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(Response.SC_BAD_REQUEST))
@@ -133,6 +64,118 @@ public abstract class AbstractDeviceRoute extends HouseRoute {
         handlePost();
         handlePut();
         handleDelete();
+    }
+    /**
+     * HTTP GET request setting.
+     *
+     * Set the get method and adds openAPI info.
+     * @param rd rest definition with the desired route
+     */
+    private void buildGet(RestDefinition rd) {
+        rd.get("{label}")
+            .description(String.format("Returns basic info about %s with given label", endpoint))
+            .responseMessage().code(200).message(String.format("Basic info about %s returned", endpoint))
+                .endResponseMessage()
+            .responseMessage().code(404).message(String.format("%s with given label isn't present in the house",
+                    endpoint.substring(0,1).toUpperCase() + endpoint.substring(1))).endResponseMessage()
+            .outType(deviceType)
+            .param().name("label").type(path).description(String.format("The label of the %s to get", endpoint))
+                .endParam()
+            .produces(MediaType.APPLICATION_JSON_VALUE)
+            .to("direct:read" + endpoint);
+
+        rd.get()
+            .description(String.format("Returns array of all %ss",endpoint))
+            .outType(deviceType.arrayType())
+            .responseMessage().code(200).message(String.format("Basic info about all %ss returned", endpoint))
+                .endResponseMessage()
+            .produces(MediaType.APPLICATION_JSON_VALUE)
+            .to("direct:read" + endpoint + "s");
+    }
+
+    /**
+     * HTTP POST request setting.
+     *
+     * Set the post method and adds openAPI info.
+     * @param rd rest definition with the desired route
+     */
+    private void buildPost(RestDefinition rd) {
+        rd.post()
+            .description(String.format("Add new %s to the house", endpoint))
+            .responseMessage().code(201).message(String.format("%s added", endpoint)).endResponseMessage()
+            .responseMessage().code(400).message("Invalid body").endResponseMessage()
+            .responseMessage().code(409).message(String.format("Device %s with given label already exists ", endpoint))
+                .endResponseMessage()
+            .consumes(MediaType.APPLICATION_JSON_VALUE)
+            .type(deviceType)
+            .param().name("body").description("Object, that needs to be added to the house."
+                    + " Label must be unique identifier among the devices in the house.").endParam()
+            .outType(deviceType)
+            .to("direct:create" + endpoint);
+    }
+
+    /**
+     * HTTP PUT request setting.
+     *
+     * Set the put method and adds openAPI info.
+     * @param rd rest definition with the desired route
+     */
+    private void buildPut(RestDefinition rd) {
+        buildAsPut(rd.put(), String.format("Update an existing %s", endpoint));
+    }
+
+    /**
+     * HTTP PATCH request setting.
+     *
+     * Set the patch method and adds openAPI info.
+     * Setting of the patch is the same as of the put.
+     * @param rd rest definition with the desired route
+     */
+    private void buildPatch(RestDefinition rd) {
+        buildAsPut(rd.patch(), String.format("Update an existing %s (same as put)",endpoint));
+    }
+
+    /**
+     * HTTP DELETE request setting.
+     *
+     * Set the delete method and adds openAPI info.
+     * @param rd rest definition with the desired route
+     */
+    private void buildDelete(RestDefinition rd) {
+        rd.delete()
+            .description(String.format("Deletes a %s with given label", endpoint))
+            .responseMessage().code(200).message(String.format("%s deleted", endpoint.substring(0,1).toUpperCase()
+                    + endpoint.substring(1))).endResponseMessage()
+            .responseMessage().code(400).message("Header label is missing").endResponseMessage()
+            .responseMessage().code(404).message(String.format("%s with given label isn't present in the house",
+                    endpoint.substring(0,1).toUpperCase() + endpoint.substring(1))).endResponseMessage()
+            .param().name("label").type(RestParamType.header).required(Boolean.TRUE)
+                .description("Label of the device").endParam()
+            .to("direct:delete" + endpoint);
+    }
+
+    /**
+     * HTTP PUT request setting.
+     *
+     * Set the get method and adds openAPI info.
+     * This setting can be used for multiple methods if needed
+     * @param rd rest definition with the desired route
+     * @param description brief openAPI description of the method
+     */
+    private void buildAsPut(RestDefinition rd, String description) {
+        rd
+            .description(description)
+            .responseMessage().code(200).message(String.format("%s updated", endpoint.substring(0, 1).toUpperCase()
+                    + endpoint.substring(1))).endResponseMessage()
+            .responseMessage().code(400).message("Invalid body").endResponseMessage()
+            .responseMessage().code(404).message(String.format("%s with given label isn't present in the house",
+                    endpoint.substring(0, 1).toUpperCase() + endpoint.substring(1))).endResponseMessage()
+            .param().name("body").description("Object, that needs to be updated in the house."
+                    + " Label is identifier of the updated device.").endParam()
+            .type(deviceType)
+            .outType(deviceType)
+            .consumes(MediaType.APPLICATION_JSON_VALUE)
+            .to("direct:update" + endpoint);
     }
 
     /**
