@@ -19,20 +19,25 @@ package io.patriot_framework.virtual_smart_home.route;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import io.patriot_framework.virtual_smart_home.house.device.Device;
+import io.patriot_framework.virtual_smart_home.house.device.IllegalDeviceArgumentException;
 import org.apache.camel.Exchange;
 import org.apache.camel.model.rest.RestDefinition;
-import org.apache.camel.model.rest.RestParamType;
 import static org.apache.camel.model.rest.RestParamType.path;
 import org.apache.catalina.connector.Response;
 import org.springframework.http.MediaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.NoSuchElementException;
+
 
 /**
  * REST API base class for device routes.
  */
 public abstract class AbstractDeviceRoute extends HouseRoute {
 
+    private final String routeDeviceIdentifier = "label";
     private String endpoint;
     private Class<? extends Device> deviceType;
+    private final ObjectMapper mapper = new ObjectMapper();
 
     public void setupRoute(String endpoint, Class<? extends Device> deviceType) {
         this.endpoint = endpoint;
@@ -60,6 +65,10 @@ public abstract class AbstractDeviceRoute extends HouseRoute {
                 .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(Response.SC_BAD_REQUEST))
                 .handled(true);
 
+        onException(IllegalDeviceArgumentException.class)
+                .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(Response.SC_BAD_REQUEST))
+                .handled(true);
+
         handleGet();
         handlePost();
         handlePut();
@@ -72,14 +81,14 @@ public abstract class AbstractDeviceRoute extends HouseRoute {
      * @param rd rest definition with the desired route
      */
     private void buildGet(RestDefinition rd) {
-        rd.get("{label}")
+        rd.get("{" + routeDeviceIdentifier + "}")
             .description(String.format("Returns basic info about %s with given label", endpoint))
             .responseMessage().code(200).message(String.format("Basic info about %s returned", endpoint))
                 .endResponseMessage()
             .responseMessage().code(404).message(String.format("%s with given label isn't present in the house",
                     endpoint.substring(0,1).toUpperCase() + endpoint.substring(1))).endResponseMessage()
             .outType(deviceType)
-            .param().name("label").type(path).description(String.format("The label of the %s to get", endpoint))
+            .param().name("label").type(path).description(String.format("The label of the requested %s", endpoint))
                 .endParam()
             .produces(MediaType.APPLICATION_JSON_VALUE)
             .to("direct:read" + endpoint);
@@ -109,7 +118,7 @@ public abstract class AbstractDeviceRoute extends HouseRoute {
             .consumes(MediaType.APPLICATION_JSON_VALUE)
             .type(deviceType)
             .param().name("body").description("Object, that needs to be added to the house."
-                    + " Label must be unique identifier among the devices in the house.").endParam()
+                    + " Label must be unique among all the devices in the house.").endParam()
             .outType(deviceType)
             .to("direct:create" + endpoint);
     }
@@ -121,7 +130,7 @@ public abstract class AbstractDeviceRoute extends HouseRoute {
      * @param rd rest definition with the desired route
      */
     private void buildPut(RestDefinition rd) {
-        buildAsPut(rd.put(), String.format("Update an existing %s", endpoint));
+        buildAsPut(rd.put("{" + routeDeviceIdentifier + "}"), String.format("Update an existing %s", endpoint));
     }
 
     /**
@@ -132,7 +141,8 @@ public abstract class AbstractDeviceRoute extends HouseRoute {
      * @param rd rest definition with the desired route
      */
     private void buildPatch(RestDefinition rd) {
-        buildAsPut(rd.patch(), String.format("Update an existing %s (same as put)",endpoint));
+        buildAsPut(rd.patch("{" + routeDeviceIdentifier + "}"),
+                String.format("Update an existing %s (same as put)",endpoint));
     }
 
     /**
@@ -142,15 +152,15 @@ public abstract class AbstractDeviceRoute extends HouseRoute {
      * @param rd rest definition with the desired route
      */
     private void buildDelete(RestDefinition rd) {
-        rd.delete()
+        rd.delete("{" + routeDeviceIdentifier + "}")
             .description(String.format("Deletes a %s with given label", endpoint))
             .responseMessage().code(200).message(String.format("%s deleted", endpoint.substring(0,1).toUpperCase()
                     + endpoint.substring(1))).endResponseMessage()
             .responseMessage().code(400).message("Header label is missing").endResponseMessage()
             .responseMessage().code(404).message(String.format("%s with given label isn't present in the house",
                     endpoint.substring(0,1).toUpperCase() + endpoint.substring(1))).endResponseMessage()
-            .param().name("label").type(RestParamType.header).required(Boolean.TRUE)
-                .description("Label of the device").endParam()
+            .param().name("label").type(path).description(String.format("%s label to be deleted",
+                    endpoint.substring(0,1).toUpperCase() + endpoint.substring(1))).endParam()
             .to("direct:delete" + endpoint);
     }
 
@@ -170,8 +180,10 @@ public abstract class AbstractDeviceRoute extends HouseRoute {
             .responseMessage().code(400).message("Invalid body").endResponseMessage()
             .responseMessage().code(404).message(String.format("%s with given label isn't present in the house",
                     endpoint.substring(0, 1).toUpperCase() + endpoint.substring(1))).endResponseMessage()
-            .param().name("body").description("Object, that needs to be updated in the house."
-                    + " Label is identifier of the updated device.").endParam()
+            .param().name("label").type(path).description(String.format("The label of the updated %s", endpoint))
+                .endParam()
+            .param().name("body").description("Object, that needs to be updated in the house. "
+                    + "Label cannot be changed. If label will differ from path value it will be ignored.").endParam()
             .type(deviceType)
             .outType(deviceType)
             .consumes(MediaType.APPLICATION_JSON_VALUE)
@@ -189,10 +201,9 @@ public abstract class AbstractDeviceRoute extends HouseRoute {
         from("direct:read" + endpoint)
                 .routeId("read-" + endpoint + "-route")
                 .process(exchange -> {
-                    final String label = exchange.getMessage().getHeader("label").toString();
+                    final String label = exchange.getMessage().getHeader(routeDeviceIdentifier).toString();
                     final Device retrievedDevice = house.getDevicesOfType(deviceType).get(label);
                     exchange.getMessage().setBody(retrievedDevice);
-
                     if (retrievedDevice == null) {
                         exchange.getMessage().setHeader(Exchange.HTTP_RESPONSE_CODE, Response.SC_NOT_FOUND); // 404
                     }
@@ -223,7 +234,6 @@ public abstract class AbstractDeviceRoute extends HouseRoute {
                             final Device checkForConflict = house
                                     .getDevicesOfType(deviceType)
                                     .get(deviceToAdd.getLabel());
-
                             if (checkForConflict != null) {
                                 exchange.getMessage().setHeader(Exchange.HTTP_RESPONSE_CODE, Response.SC_CONFLICT);
                                 // 409
@@ -231,9 +241,9 @@ public abstract class AbstractDeviceRoute extends HouseRoute {
                             }
                             exchange.getMessage().setHeader(Exchange.HTTP_RESPONSE_CODE, Response.SC_CREATED); // 201
                             house.addDevice(deviceToAdd.getLabel(), deviceToAdd);
+                            exchange.getMessage().setBody(house.getDevice(deviceToAdd.getLabel()));
                             exchange.getMessage().setHeader("label", deviceToAdd.getLabel());
                         })
-                        .setBody(body()) // Respond with request body.
                         .choice()
                             .when(simple("${header.CamelHttpResponseCode} != 409"))
                                 .log("Created route path for \"${header.label}\" device")
@@ -258,20 +268,38 @@ public abstract class AbstractDeviceRoute extends HouseRoute {
                 .choice()
                     .when(body().isNotNull())
                         .process(exchange -> {
-                            final Device deviceToUpdate = exchange.getMessage().getBody(deviceType);
-                            final Device checkIfExists = house
-                                    .getDevicesOfType(deviceType)
-                                    .get(deviceToUpdate.getLabel());
-
-                            if (checkIfExists == null) {
+                            final String label = exchange.getMessage().getHeader(routeDeviceIdentifier).toString();
+                            Device updatedDevice = exchange.getMessage().getBody(deviceType);
+                            try {
+                                updatedDevice = updatedDevice.createSimilar(label);
+                            } catch (IllegalDeviceArgumentException e) {
+                                exchange.getMessage().setHeader(Exchange.HTTP_RESPONSE_CODE, Response.SC_BAD_REQUEST);
+                                // 400
+                                return;
+                            }
+                            Device houseDevice = null;
+                            try {
+                                houseDevice = house.getDevice(label);
+                            } catch (NoSuchElementException e) {
+                                exchange.getMessage().setHeader(Exchange.HTTP_RESPONSE_CODE, Response.SC_NOT_FOUND);
+                                // 404
+                                exchange.getMessage().setBody(e.getMessage());
+                                return;
+                            } catch (IllegalArgumentException e) {
+                                exchange.getMessage().setHeader(Exchange.HTTP_RESPONSE_CODE, Response.SC_BAD_REQUEST);
+                                // 400
+                                exchange.getMessage().setBody(e.getMessage());
+                            }
+                            if (updatedDevice.equals(houseDevice)) {
+                                house.updateDevice(label, updatedDevice);
+                            } else {
                                 exchange.getMessage().setHeader(Exchange.HTTP_RESPONSE_CODE, Response.SC_NOT_FOUND);
                                 // 404
                                 return;
                             }
-                            house.updateDevice(deviceToUpdate.getLabel(), deviceToUpdate);
-                            exchange.getMessage().setHeader("label", deviceToUpdate.getLabel());
+                            exchange.getMessage().setBody(house.getDevice(label));
+                            exchange.getMessage().setHeader("label", label);
                         })
-                        .setBody(body()) // Respond with request body.
                         .choice()
                             .when(simple("${header.CamelHttpResponseCode} != 404"))
                                 .log("Updated fireplace \"${header.label}\"")
@@ -296,15 +324,15 @@ public abstract class AbstractDeviceRoute extends HouseRoute {
                 .choice()
                     .when(header("label").isNotNull())
                         .process(exchange -> {
-                            final String label = exchange.getMessage().getHeader("label").toString();
+                            final String label = exchange.getMessage().getHeader(routeDeviceIdentifier).toString();
                             final Device deviceToDelete = house.getDevicesOfType(deviceType).get(label);
-
                             if (deviceToDelete == null) {
                                 exchange.getMessage().setHeader(Exchange.HTTP_RESPONSE_CODE, Response.SC_NOT_FOUND);
                                 // 404
                                 return;
                             }
-                            house.removeDevice(exchange.getMessage().getHeader("label").toString());
+                            house.removeDevice(label);
+                            exchange.getMessage().setBody(deviceToDelete);
                         })
                         .choice()
                             .when(simple("${header.CamelHttpResponseCode} != 404"))

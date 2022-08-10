@@ -98,12 +98,12 @@ class FireplaceRouteTest extends DeviceRouteBase {
     }
 
     @Test
-    void postRequestConflict() {
+    void postRequestConflict(){
         super.postRequestConflict(fireplaceEndpoint, defaultFireplaceJson);
     }
 
     @Test
-    void postRequestStatusCode201() {
+    void postRequestStatusCode201(){
         super.postRequestStatusCode201(fireplaceEndpoint, defaultFireplaceJson);
     }
 
@@ -126,7 +126,7 @@ class FireplaceRouteTest extends DeviceRouteBase {
     }
 
     @Test
-    void putRequestStatusCode200() {
+    void putRequestStatusCode200() throws JSONException {
         super.putRequestStatusCode200(fireplaceEndpoint, defaultFireplaceJson);
     }
 
@@ -143,10 +143,12 @@ class FireplaceRouteTest extends DeviceRouteBase {
         given()
                 .contentType(ContentType.JSON)
                 .body(enabledFireplace.toString())
-                .put(fireplaceEndpoint);
+                .pathParam("label", enabledFireplace.get("label"))
+                .put(fireplaceEndpoint + "/{label}");
 
         given()
-                .when().get(fireplaceEndpoint + "/" + defaultFireplaceJson.getString("label"))
+                .pathParam("label", enabledFireplace.get("label"))
+                .when().get(fireplaceEndpoint + "/{label}")
                 .then().body(Matchers.equalTo(enabledFireplace.toString()));
     }
 
@@ -157,7 +159,7 @@ class FireplaceRouteTest extends DeviceRouteBase {
     }
 
     @Test
-    void patchRequestStatusCode200() {
+    void patchRequestStatusCode200() throws JSONException {
         super.patchRequestStatusCode200(fireplaceEndpoint, defaultFireplaceJson);
     }
 

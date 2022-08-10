@@ -45,8 +45,8 @@ public class BaseRoute extends RouteBuilder {
             .component("servlet")
             .host(host).port(port)
             .clientRequestValidation(true)
-	    .bindingMode(RestBindingMode.json)
-	    .apiContextPath(apiContextPath)
-	    .apiProperty("api.title", apiTitle).apiProperty("api.version", apiVersion);
+            .bindingMode(RestBindingMode.json)
+            .apiContextPath(apiContextPath)
+            .apiProperty("api.title", apiTitle).apiProperty("api.version", apiVersion);
     }
 }
