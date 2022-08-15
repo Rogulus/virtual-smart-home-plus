@@ -27,7 +27,7 @@
         <!-- Checks for Javadoc comments.                              -->
         <!-- See https://checkstyle.sourceforge.io/config_javadoc.html -->
         <module name="JavadocMethod">
-            <property name="scope" value="public"/>
+            <property name="accessModifiers" value="public"/>
             <property name="severity" value="warning" />
         </module>
         <module name="JavadocType">
