@@ -2,32 +2,33 @@
 
 
 
-## Docker
+### Building image
 
-In order to build docker image you first need to create .jar by building 
-project with maven. After you're done with this run docker build.
+In order to build image for the tests you need 
+following commands.
 
 ```console
-$ mvn clean package
-$ docker build -f Dockerfile -t virtual-smart-home-plus .
+$ podman build . --tag "${IMAGE_TAG}"
 ```
+
+This will produce image with tag specified by variable 
+`IMAGE_TAG`
+
+### Running image
 
 Once you have image built you are ready to run it.
+In order to have access to the opened port `8080` 
+with REST API and you must pass the `-p` parameter.
 
 ```console
-$ docker run virtual-smart-home-plus -p 8080:8080
+$ podman run -p 8080:8080 ${IMAGE_TAG}
 ```
 
-Our application will now run in docker container at port 8080. 
-Usually the docker IP is 172.168.0.2, if it's not the case in your
-situation you can find container's IP with.
+Then the applications REST API will be available at 
+`http://localhost:8080`
 
-```console
-$ docker container list
-$ docker inspect <container_ID> | grep "IPAddress"
-```
 
-## Surefire HTML reports
+### Surefire HTML reports
 
 If you wish to generate HTML reports containing easier to read test results
 and overview of project dependencies. Keep in mind it will take a few minutes.
