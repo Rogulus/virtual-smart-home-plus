@@ -25,9 +25,12 @@ import org.apache.camel.Exchange;
 import org.apache.camel.model.rest.RestDefinition;
 import static org.apache.camel.model.rest.RestParamType.path;
 import org.apache.catalina.connector.Response;
+import org.apache.logging.log4j.Level;
 import org.springframework.http.MediaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.NoSuchElementException;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 
 /**
@@ -35,6 +38,8 @@ import java.util.NoSuchElementException;
  */
 public abstract class AbstractDeviceRoute extends HouseRoute {
 
+    public static final Logger LOGGER = LogManager.getLogger();
+    public static final Level LOGLEVEL = Level.INFO;
     private final String routeDeviceIdentifier = "label";
     private String endpoint;
     private Class<? extends Device> deviceType;
@@ -207,6 +212,8 @@ public abstract class AbstractDeviceRoute extends HouseRoute {
                     exchange.getMessage().setBody(retrievedDevice);
                     if (retrievedDevice == null) {
                         exchange.getMessage().setHeader(Exchange.HTTP_RESPONSE_CODE, Response.SC_NOT_FOUND); // 404
+                        LOGGER.log(LOGLEVEL, String.format("Cannot find device of %s with label %s, returns code 400",
+                                deviceType, label));
                     }
                 })
                 .endRest();
@@ -238,6 +245,8 @@ public abstract class AbstractDeviceRoute extends HouseRoute {
                             if (checkForConflict != null) {
                                 exchange.getMessage().setHeader(Exchange.HTTP_RESPONSE_CODE, Response.SC_CONFLICT);
                                 // 409
+                                LOGGER.log(LOGLEVEL, String.format("Cannot create device of %s label %s" +
+                                        " is already used, return code 409", deviceType, deviceToAdd.getLabel()));
                                 return;
                             }
                             exchange.getMessage().setHeader(Exchange.HTTP_RESPONSE_CODE, Response.SC_CREATED); // 201
@@ -274,19 +283,21 @@ public abstract class AbstractDeviceRoute extends HouseRoute {
 
                             try {
                                 updatedDevice = updatedDevice.createSimilar(label);
+                                house.updateDevice(label, updatedDevice);
                             } catch (IllegalDeviceArgumentException e) {
                                 exchange.getMessage().setHeader(Exchange.HTTP_RESPONSE_CODE, Response.SC_BAD_REQUEST);
                                 // 400
                                 exchange.getMessage().setBody(e.getMessage());
+                                LOGGER.log(LOGLEVEL, String.format("Cannot create device of %s because label is null," +
+                                        " return code 400", deviceType));
                                 return;
-                            }
-
-                            try {
-                                house.updateDevice(label, updatedDevice);
                             } catch (NoSuchElementException | DifferentDeviceException e) {
                                 exchange.getMessage().setHeader(Exchange.HTTP_RESPONSE_CODE, Response.SC_NOT_FOUND);
                                 // 404
                                 exchange.getMessage().setBody(e.getMessage());
+                                LOGGER.log(LOGLEVEL, String.format("Cannot create device of %s because device with" +
+                                        " label %s is not present in the house or is instance of different class," +
+                                        " return code 404", deviceType));
                                 return;
                             }
 
@@ -324,6 +335,8 @@ public abstract class AbstractDeviceRoute extends HouseRoute {
                                 exchange.getMessage().setHeader(Exchange.HTTP_RESPONSE_CODE, Response.SC_NOT_FOUND);
                                 // 404
                                 exchange.getMessage().setBody(e.getMessage());
+                                LOGGER.log(LOGLEVEL, String.format("Device with label %s is not present in the house," +
+                                        " return code 404"));
                             }
                         })
                         .choice()
