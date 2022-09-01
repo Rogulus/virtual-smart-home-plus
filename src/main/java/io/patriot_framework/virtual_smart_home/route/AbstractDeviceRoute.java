@@ -19,6 +19,7 @@ package io.patriot_framework.virtual_smart_home.route;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import io.patriot_framework.virtual_smart_home.house.device.Device;
+import io.patriot_framework.virtual_smart_home.house.device.DifferentDeviceException;
 import io.patriot_framework.virtual_smart_home.house.device.IllegalDeviceArgumentException;
 import org.apache.camel.Exchange;
 import org.apache.camel.model.rest.RestDefinition;
@@ -270,33 +271,25 @@ public abstract class AbstractDeviceRoute extends HouseRoute {
                         .process(exchange -> {
                             final String label = exchange.getMessage().getHeader(routeDeviceIdentifier).toString();
                             Device updatedDevice = exchange.getMessage().getBody(deviceType);
+
                             try {
                                 updatedDevice = updatedDevice.createSimilar(label);
                             } catch (IllegalDeviceArgumentException e) {
                                 exchange.getMessage().setHeader(Exchange.HTTP_RESPONSE_CODE, Response.SC_BAD_REQUEST);
                                 // 400
+                                exchange.getMessage().setBody(e.getMessage());
                                 return;
                             }
-                            Device houseDevice = null;
+
                             try {
-                                houseDevice = house.getDevice(label);
-                            } catch (NoSuchElementException e) {
-                                exchange.getMessage().setHeader(Exchange.HTTP_RESPONSE_CODE, Response.SC_NOT_FOUND);
-                                // 404
-                                exchange.getMessage().setBody(e.getMessage());
-                                return;
-                            } catch (IllegalArgumentException e) {
-                                exchange.getMessage().setHeader(Exchange.HTTP_RESPONSE_CODE, Response.SC_BAD_REQUEST);
-                                // 400
-                                exchange.getMessage().setBody(e.getMessage());
-                            }
-                            if (updatedDevice.equals(houseDevice)) {
                                 house.updateDevice(label, updatedDevice);
-                            } else {
+                            } catch (NoSuchElementException | DifferentDeviceException e) {
                                 exchange.getMessage().setHeader(Exchange.HTTP_RESPONSE_CODE, Response.SC_NOT_FOUND);
                                 // 404
+                                exchange.getMessage().setBody(e.getMessage());
                                 return;
                             }
+
                             exchange.getMessage().setBody(house.getDevice(label));
                             exchange.getMessage().setHeader("label", label);
                         })
@@ -325,14 +318,13 @@ public abstract class AbstractDeviceRoute extends HouseRoute {
                     .when(header("label").isNotNull())
                         .process(exchange -> {
                             final String label = exchange.getMessage().getHeader(routeDeviceIdentifier).toString();
-                            final Device deviceToDelete = house.getDevicesOfType(deviceType).get(label);
-                            if (deviceToDelete == null) {
+                            try {
+                                house.removeDevice(label);
+                            } catch (NoSuchElementException e) {
                                 exchange.getMessage().setHeader(Exchange.HTTP_RESPONSE_CODE, Response.SC_NOT_FOUND);
                                 // 404
-                                return;
+                                exchange.getMessage().setBody(e.getMessage());
                             }
-                            house.removeDevice(label);
-                            exchange.getMessage().setBody(deviceToDelete);
                         })
                         .choice()
                             .when(simple("${header.CamelHttpResponseCode} != 404"))

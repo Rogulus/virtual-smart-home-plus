@@ -44,7 +44,7 @@ public abstract class Device {
      *
      * @param label label of the new fireplace
      * @return new fireplace with given label, other attributes will be same as in this object
-     * @throws IllegalArgumentException if label is null
+     * @throws IllegalDeviceArgumentException if label is null
      */
     public abstract Device createSimilar(String label) throws IllegalDeviceArgumentException;
 

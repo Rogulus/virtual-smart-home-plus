@@ -17,7 +17,9 @@
 package io.patriot_framework.virtual_smart_home.house;
 
 import io.patriot_framework.virtual_smart_home.house.device.Device;
+import io.patriot_framework.virtual_smart_home.house.device.DifferentDeviceException;
 import io.patriot_framework.virtual_smart_home.house.device.Fireplace;
+import io.patriot_framework.virtual_smart_home.house.device.TV;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
@@ -36,6 +38,8 @@ public class HouseTest {
     Map<String, Device> devices = new ConcurrentHashMap<>();
     Fireplace fireplace = new Fireplace("fireplace");
     Fireplace fireplace2 = new Fireplace("fireplace2");
+
+    TV tv = new TV("tv");
 
     @Test
     public void addDevice() {
@@ -73,5 +77,30 @@ public class HouseTest {
         house.setDevices(devices);
         Map<String, Device> expected = new HashMap<>(devices);
         assertThat(house.getDevicesOfType(Fireplace.class), equalTo(expected));
+    }
+
+    @Test
+    public void updateDevice() {
+        devices.put("fireplace", fireplace);
+        fireplace.setEnabled(false);
+        house.setDevices(devices);
+        fireplace = new Fireplace("fireplace");
+        fireplace.setEnabled(true);
+        house.updateDevice("fireplace", fireplace);
+        assertThat(house.getDevice("fireplace"), equalTo(fireplace));
+    }
+
+    @Test
+    public void updateDeviceWrongClass() {
+        devices.put("fireplace", fireplace);
+        house.setDevices(devices);
+
+        Exception exception = assertThrows(DifferentDeviceException.class, () -> {
+            house.updateDevice("fireplace", tv);
+        });
+
+        String expectedMessage = "Updating with different device";
+        String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
     }
 }
