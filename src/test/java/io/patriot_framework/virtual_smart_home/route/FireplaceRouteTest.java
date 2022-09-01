@@ -108,6 +108,16 @@ class FireplaceRouteTest extends DeviceRouteBase {
     }
 
     @Test
+    void postRequestBodyWithoutLabel() {
+        super.postRequestBodyWithoutLabel(fireplaceEndpoint, defaultFireplaceJson);
+    }
+
+    @Test
+    void postRequestBodyWithRedundantAttribute() throws JSONException {
+        super.postRequestBodyWithRedundantAttribute(fireplaceEndpoint,defaultFireplaceJson);
+    }
+
+    @Test
     void simplePostRequest() throws JSONException {
         super.simplePostRequest(fireplaceEndpoint, defaultFireplaceJson);
     }
@@ -128,6 +138,25 @@ class FireplaceRouteTest extends DeviceRouteBase {
     @Test
     void putRequestStatusCode200() throws JSONException {
         super.putRequestStatusCode200(fireplaceEndpoint, defaultFireplaceJson);
+    }
+
+    @Test
+    void putRequestPathAndBodyLabelDifferStatusCode200() throws JSONException {
+        super.putRequestPathAndBodyLabelDifferStatusCode200(fireplaceEndpoint, defaultFireplaceJson);
+    }
+
+    @Test
+    void putRequestPathAndBodyLabelDiffer() throws JSONException {
+        super.putRequestPathAndBodyLabelDiffer(fireplaceEndpoint, defaultFireplaceJson);
+    }
+    @Test
+    void putRequestDifferentDeviceType() throws JSONException {
+        super.putRequestDifferentDeviceType(fireplaceEndpoint, defaultFireplaceJson);
+    }
+
+    @Test
+    void putRequestNonExistingDevice() {
+        super.putRequestNonExistingDevice(fireplaceEndpoint, defaultFireplaceJson);
     }
 
     @Test
@@ -173,6 +202,12 @@ class FireplaceRouteTest extends DeviceRouteBase {
     void deleteRequestStatusCode200() throws JSONException {
         super.deleteRequestStatusCode200(fireplaceEndpoint, defaultFireplaceJson);
     }
+
+    @Test
+    void deleteRequestNonExistingDevice() {
+        super.deleteRequestNonExistingDevice(fireplaceEndpoint);
+    }
+
 
     @Test
     void simpleDeleteRequest() throws JSONException {

@@ -288,16 +288,16 @@ public abstract class AbstractDeviceRoute extends HouseRoute {
                                 exchange.getMessage().setHeader(Exchange.HTTP_RESPONSE_CODE, Response.SC_BAD_REQUEST);
                                 // 400
                                 exchange.getMessage().setBody(e.getMessage());
-                                LOGGER.log(LOGLEVEL, String.format("Cannot create device of %s because label is null," +
+                                LOGGER.log(LOGLEVEL, String.format("Cannot update device of %s because label is null," +
                                         " return code 400", deviceType));
                                 return;
                             } catch (NoSuchElementException | DifferentDeviceException e) {
                                 exchange.getMessage().setHeader(Exchange.HTTP_RESPONSE_CODE, Response.SC_NOT_FOUND);
                                 // 404
                                 exchange.getMessage().setBody(e.getMessage());
-                                LOGGER.log(LOGLEVEL, String.format("Cannot create device of %s because device with" +
-                                        " label %s is not present in the house or is instance of different class," +
-                                        " return code 404", deviceType));
+                                LOGGER.log(LOGLEVEL, String.format("Cannot update device of %s because device with" +
+                                        " label %s is not present in the house or instance of different class," +
+                                        " return code 404", deviceType, label));
                                 return;
                             }
 
@@ -336,7 +336,7 @@ public abstract class AbstractDeviceRoute extends HouseRoute {
                                 // 404
                                 exchange.getMessage().setBody(e.getMessage());
                                 LOGGER.log(LOGLEVEL, String.format("Device with label %s is not present in the house," +
-                                        " return code 404"));
+                                        " return code 404", label));
                             }
                         })
                         .choice()
