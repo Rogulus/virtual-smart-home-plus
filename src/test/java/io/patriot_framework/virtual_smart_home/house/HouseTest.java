@@ -98,9 +98,33 @@ public class HouseTest {
         Exception exception = assertThrows(DifferentDeviceException.class, () -> {
             house.updateDevice("fireplace", tv);
         });
+        assertTrue(exception.getMessage().contains("Updating with different device"));
+    }
 
-        String expectedMessage = "Updating with different device";
-        String actualMessage = exception.getMessage();
-        assertTrue(actualMessage.contains(expectedMessage));
+    @Test
+    public void updateDeviceLabelNull() {
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            house.updateDevice(null, fireplace);
+        });
+        assertTrue(exception.getMessage().contains("Label of the device can't be null"));
+    }
+
+    @Test
+    public void updateDeviceNull() {
+        devices.put("fireplace", fireplace);
+        house.setDevices(devices);
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            house.updateDevice("fireplace", null);
+        });
+        assertTrue(exception.getMessage().contains("Device parameter can't be null"));
+    }
+
+    @Test
+    public void updateDeviceWhichIsNotInTheHouse() {
+        Exception exception = assertThrows(NoSuchElementException.class, () -> {
+            house.updateDevice("fireplace", fireplace);
+        });
+        assertTrue(exception.getMessage().contains("Device with label: fireplace is not present in the house"));
+
     }
 }
