@@ -3,7 +3,6 @@ package io.patriotframework.virtualsmarthomeplus.house;
 import io.patriotframework.virtualsmarthomeplus.house.devices.Device;
 import org.apache.commons.lang3.NotImplementedException;
 
-import java.util.List;
 import java.util.Set;
 
 public class House {

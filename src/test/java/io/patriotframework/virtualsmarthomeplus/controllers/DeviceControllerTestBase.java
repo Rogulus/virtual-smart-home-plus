@@ -2,49 +2,56 @@ package io.patriotframework.virtualsmarthomeplus.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.patriotframework.virtualsmarthomeplus.controllers.house.TestDevice;
 import io.patriotframework.virtualsmarthomeplus.house.House;
 import io.patriotframework.virtualsmarthomeplus.house.devices.Device;
+import io.patriotframework.virtualsmarthomeplus.house.devices.finalDevices.Fireplace;
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 public abstract class DeviceControllerTestBase {
-    protected JSONObject minPostDevice;
-    protected JSONObject fullDefaultDevice;
-    protected JSONObject fullUpdatedDevice;
+    protected Device minPostDevice;
+    protected Device fullDefaultDevice;
+    protected Device fullUpdatedDevice;
     protected String pathToDevices;
-
     protected String label;
+    protected Class<?extends Device[]> aClass = Fireplace[].class;
 
+    protected ObjectNode minPostDeviceJson;
+    protected ObjectNode fullDefaultDeviceJson;
+    protected ObjectNode fullUpdatedDeviceJson;
     ObjectMapper jsonMapper = new com.fasterxml.jackson.databind.ObjectMapper();
 
     @Autowired House house;
 
-    public DeviceControllerTestBase() throws JSONException{
+    public DeviceControllerTestBase() throws JSONException, JsonProcessingException {
         pathToDevices = getPathToDevices();
-        minPostDevice = getMinPostDevice();
+
         fullDefaultDevice = getDefaultDevice();
         fullUpdatedDevice = getFullUpdatedDevice();
-        label = fullDefaultDevice.getString("label");
+
+        minPostDeviceJson = (ObjectNode) jsonMapper.readTree(getMinPostDeviceJson());
+        fullDefaultDeviceJson = jsonMapper.valueToTree(fullDefaultDevice);
+        fullUpdatedDeviceJson = jsonMapper.valueToTree(fullUpdatedDevice);
+
+        label = fullDefaultDevice.getLabel();
     }
+
 
     //todo comments and mentiion, that it should be same device with different representations
     protected abstract String getPathToDevices();
-    protected abstract JSONObject getMinPostDevice() throws JSONException;
-    protected abstract JSONObject getDefaultDevice() throws JSONException;
-    protected abstract JSONObject getFullUpdatedDevice() throws JSONException;
+    protected abstract String getMinPostDeviceJson() throws JSONException;
+    protected abstract Device getDefaultDevice();
+    protected abstract Device getFullUpdatedDevice();
 
     @Test
     public void validPost() throws JsonProcessingException {
@@ -52,23 +59,23 @@ public abstract class DeviceControllerTestBase {
                 .when().post(pathToDevices)
                 .then().statusCode(200).body(equalTo(fullDefaultDevice));
 
-        assertEquals(jsonMapper.writeValueAsString(house.getDevice(label)), fullDefaultDevice.toString());
+        assertTrue(fullDefaultDevice.hasSameAttributes(house.getDevice(label)));
     }
 
     @Test
-    public void postAlreadyPresentDeviceReturns409() throws JSONException, JsonProcessingException {
-        house.putDevice(new Device(label));
+    public void postAlreadyPresentDeviceReturns409() {
+        house.putDevice(fullDefaultDevice);
 
         given().body(fullUpdatedDevice.toString())
                 .when().post(pathToDevices)
                 .then().statusCode(409);
 
-        assertEquals(jsonMapper.writeValueAsString(house.getDevice(label)), fullDefaultDevice.toString());
+        assertTrue(fullDefaultDevice.hasSameAttributes(house.getDevice(label)));
     }
 
     @Test
     public void postWithMissingMandatoryAttributeReturns400() {
-        fullDefaultDevice.remove("label");
+        fullDefaultDeviceJson.remove("label");
         given().body(fullDefaultDevice.toString())
                 .when().post(pathToDevices)
                 .then().statusCode(400);
@@ -79,17 +86,17 @@ public abstract class DeviceControllerTestBase {
     }
 
     @Test
-    public void postWithoutOptionalAttributesReturnsDefaultDevice() throws JsonProcessingException{
+    public void postWithoutOptionalAttributesReturnsDefaultDevice() {
         given().body(minPostDevice.toString())
                 .when().post(pathToDevices)
                 .then().statusCode(200).body(equalTo(fullDefaultDevice));
 
-        assertEquals(jsonMapper.writeValueAsString(house.getDevice(label)), fullDefaultDevice.toString());
+        assertTrue(fullDefaultDevice.hasSameAttributes(house.getDevice(label)));
     }
 
     @Test
-    public void postWithSuperfluousAttributeReturns400() throws JSONException {
-        fullDefaultDevice.put("superfluous", true);
+    public void postWithSuperfluousAttributeReturns400() {
+        fullDefaultDeviceJson.put("superfluous", true);
         given().body(fullDefaultDevice.toString())
                 .when().post(pathToDevices)
                 .then().statusCode(400);
@@ -101,7 +108,7 @@ public abstract class DeviceControllerTestBase {
 
     @Test
     public void validDelete() {
-        house.putDevice(new Device(label));
+        house.putDevice(fullDefaultDevice);
 
         given()
                 .when().delete(pathToDevices + "/" + label)
@@ -120,62 +127,70 @@ public abstract class DeviceControllerTestBase {
     }
 
     @Test
-    public void updateDefaultDevice() throws JSONException, JsonProcessingException {
-        fullUpdatedDevice.getString("label");
-        house.putDevice(new Device(label));
+    public void updateDefaultDevice() {
+        fullUpdatedDeviceJson.get("label");
+        house.putDevice(fullDefaultDevice);
 
         given().body(fullUpdatedDevice.toString())
                 .when().put(pathToDevices + "/" + label)
                 .then().statusCode(200).body(equalTo(fullUpdatedDevice));
 
-        assertEquals(jsonMapper.writeValueAsString(house.getDevice(label)), fullUpdatedDevice.toString());
+        assertTrue(fullUpdatedDevice.hasSameAttributes(house.getDevice(label)));
     }
 
     @Test
-    public void putWithMissingMandatoryAttributeReturns400() throws JsonProcessingException {
-        fullDefaultDevice.remove("label");
-        house.putDevice(new Device(label));
+    public void putWithMissingMandatoryAttributeReturns400() {
+        fullDefaultDeviceJson.remove("label");
+        house.putDevice(fullDefaultDevice);
 
         given().body(fullDefaultDevice.toString())
                 .when().put(pathToDevices + "/" + label)
                 .then().statusCode(400);
 
-        assertEquals(jsonMapper.writeValueAsString(house.getDevice(label)), fullDefaultDevice.toString());
+        assertTrue(fullDefaultDevice.hasSameAttributes(house.getDevice(label)));
     }
 
     @Test
-    public void putWithSuperfluousAttributeReturns400() throws JSONException, JsonProcessingException {
-        house.putDevice(new Device(label));
-        fullDefaultDevice.put("Superfluous", true);
+    public void putWithSuperfluousAttributeReturns400() {
+        house.putDevice(fullDefaultDevice);
+        fullDefaultDeviceJson.put("Superfluous", true);
 
         given().body(fullDefaultDevice.toString())
                 .when().put(pathToDevices + "/" + label)
                 .then().statusCode(400);
 
-        assertEquals(jsonMapper.writeValueAsString(house.getDevice(label)), fullDefaultDevice.toString());
+        assertTrue(fullDefaultDevice.hasSameAttributes(house.getDevice(label)));
     }
 
     @Test
-    public void putAttributeWithWrongValueReturns400() throws JSONException, JsonProcessingException {
-        house.putDevice(new Device(label));
-        fullDefaultDevice.put("label", "newLabel");
+    public void putAttributeWithWrongValueReturns400() {
+        house.putDevice(fullDefaultDevice);
+        fullDefaultDeviceJson.put("label", "newLabel");
 
         given().body(fullDefaultDevice.toString())
                 .when().put(pathToDevices + "/" + label)
                 .then().statusCode(400);
 
-        assertEquals(jsonMapper.writeValueAsString(house.getDevice(label)), fullDefaultDevice.toString());
+        assertTrue(fullDefaultDevice.hasSameAttributes(house.getDevice(label)));
     }
 
     @Test
-    public void getAllDevicesOfGivenType() throws JsonProcessingException {
-        house.putDevice(new Device("label1"));
-        house.putDevice(new Device("label2"));
+    public void getAllDevicesOfGivenType() {
+        Device secondFullDefaultDevice = fullDefaultDevice.createWithSameState("label2");
+        house.putDevice(fullDefaultDevice);
+        house.putDevice(secondFullDefaultDevice);
+        house.putDevice(new TestDevice("label3"));
+        TreeSet<Device> tsGiven = new TreeSet<>();
+        TreeSet<Device> tsExpected = new TreeSet<>();
+        tsExpected.add(fullDefaultDevice);
+        tsExpected.add(secondFullDefaultDevice);
 
-        given()
+        Device[] responseBody = given()
                 .when().get(pathToDevices)
-                .then().statusCode(200).body(equalTo(jsonMapper.writeValueAsString(house.getDevices(
-                        new HashSet<>(Arrays.asList("label1", "label2"))))));
+                .then().statusCode(200).extract().as(aClass);
+
+        Collections.addAll(tsGiven, responseBody);
+        assertEquals(tsExpected, tsGiven);
     }
 
     @Test
@@ -185,6 +200,3 @@ public abstract class DeviceControllerTestBase {
                 .then().statusCode(200).body(equalTo(jsonMapper.writeValueAsString(new HashSet<>())));
     }
 }
-
-
-//todo udelat test jinde, kde se bude mazat/updatovat/ziskavat zarizeni jehoz label je v dome, ale jiny typ

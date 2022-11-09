@@ -1,13 +1,18 @@
 package io.patriotframework.virtualsmarthomeplus.controllers.fireplace;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import io.patriotframework.virtualsmarthomeplus.controllers.DeviceControllerTestBase;
 
+import io.patriotframework.virtualsmarthomeplus.house.devices.Device;
+import io.patriotframework.virtualsmarthomeplus.house.devices.finalDevices.Fireplace;
 import org.json.JSONException;
 import org.json.JSONObject;
+import com.fasterxml.jackson.databind.JsonNode;
 
 public class FireplaceControllerFunctionalTest extends DeviceControllerTestBase {
 
-    public FireplaceControllerFunctionalTest() throws JSONException {
+    public FireplaceControllerFunctionalTest() throws JSONException, JsonProcessingException {
         super();
     }
 
@@ -16,25 +21,23 @@ public class FireplaceControllerFunctionalTest extends DeviceControllerTestBase 
         return "/api/v0.1/house/device";
     }
 
-
     @Override
-    protected JSONObject getMinPostDevice() throws JSONException {
+    protected String getMinPostDeviceJson() throws JSONException {
         return new JSONObject()
-                .put("label", "label1");
+                .put("label", "label1")
+                .toString();
     }
 
     @Override
-    protected JSONObject getDefaultDevice() throws JSONException {
-        return new JSONObject()
-                .put("label", "label1")
-                .put("enabled", false);
+    protected Device getDefaultDevice() {
+        return new Fireplace("label1");
     }
 
     @Override
-    protected JSONObject getFullUpdatedDevice() throws JSONException {
-        return new JSONObject()
-                .put("label", "label1")
-                .put("enabled", true);
+    protected Device getFullUpdatedDevice() {
+        Fireplace fireplace = new Fireplace("label1");
+        fireplace.fireUp();
+        return fireplace;
     }
 }
 
