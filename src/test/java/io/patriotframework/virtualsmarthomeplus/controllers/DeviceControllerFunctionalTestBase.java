@@ -197,6 +197,6 @@ public abstract class DeviceControllerTestBase {
     public void getEmptyListOfDevicesOfGivenType() throws JsonProcessingException {
         given()
                 .when().get(pathToDevices)
-                .then().statusCode(200).body(equalTo(jsonMapper.writeValueAsString(new HashSet<>())));
+                .then().statusCode(200).body(equalTo(jsonMapper.writeValueAsString(new TreeSet<>())));
     }
 }
