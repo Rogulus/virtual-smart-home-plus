@@ -2,37 +2,69 @@ package io.patriotframework.virtualsmarthomeplus.house.devices;
 
 import org.apache.commons.lang3.NotImplementedException;
 
-//From this class will be derived Actuators and Sensors. From them will be then derived final devices.
-public abstract class Device implements Comparable<Device>{
-    private String label;
-    protected Boolean enabled = false;
+import java.util.Objects;
 
-    public Device(String label){
-       this.label = label;
+/**
+ * From this class will be derived Actuators and Sensors. From them will be then derived final devices.
+ */
+
+public abstract class Device implements Comparable<Device> {
+    private final String label;
+    private Boolean enabled = false;
+
+    /**
+     * Creates new device with given label.
+     *
+     * @param label label creates identity of the device and is compared in the equals method
+     */
+    public Device(String label) {
+        this.label = label;
     }
 
-    public Device(Device origDevice, String newLabel){
-        throw new NotImplementedException("Not implemented yet.");
-    }
-
-    public String getLabel() {
-        return label;
-    }
-
-    public Boolean getEnabled() {
-        return enabled;
-    }
-
-    public int compareTo(Device compareTo) {
+    /**
+     * Creates new device with the same values of the attributes as given device except label.
+     * Label of the new device is given by parameter.
+     *
+     * @param origDevice new device copies values of given device
+     * @param newLabel   label creates identity of the device and is compared in the equals method
+     */
+    public Device(Device origDevice, String newLabel) {
         throw new NotImplementedException("Not implemented yet.");
     }
 
     /**
-     * Method responsible for creation new devices with the same values of attributes except label
+     * Label creates identity of the device and is compared in the {@link #equals(Object) equals} method.
+     *
+     * @return label of the device
+     */
+    public String getLabel() {
+        return label;
+    }
+
+    /**
+     * Indicates whether the device will react to commands.
+     *
+     * @return if true, device will react to commands
+     */
+    public Boolean isEnabled() {
+        return enabled;
+    }
+
+    /**
+     * Configures whether the device will react to commands.
+     *
+     * @param enabled if true, device will react to commands
+     */
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    /**
+     * Method responsible for creation new devices with the same values of attributes except the label
      *
      * @param newLabel label of the new device
      */
-    public abstract Device createWithSameState(String newLabel);
+    public abstract Device createWithSameAttributes(String newLabel);
 
     /**
      * Method responsible for check whether two Devices has the same values of attributes
@@ -41,4 +73,22 @@ public abstract class Device implements Comparable<Device>{
      * @throws IllegalArgumentException if parameter device is null
      */
     public abstract boolean hasSameAttributes(Device device) throws IllegalArgumentException;
+
+    @Override
+    public int compareTo(Device compareTo) {
+        throw new NotImplementedException("Not implemented yet.");
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Device device = (Device) o;
+        return getLabel().equals(device.getLabel());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getLabel());
+    }
 }
