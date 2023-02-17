@@ -2,6 +2,7 @@ package io.patriotframework.virtualsmarthomeplus.house.devices;
 
 import io.patriotframework.virtualsmarthomeplus.house.devices.finalDevices.Fireplace;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -11,42 +12,42 @@ public class FireplaceTest {
 
     @Test
     public void getStatus() {
-        fireplace1.setEnabled(false);
-        assertEquals(Fireplace.DISABLED, fireplace1.getStatus());
-        assertEquals(Fireplace.DISABLED, fireplace1.getStatus());
-        assertFalse(fireplace1.getEnabled());
-        fireplace1.setEnabled(true);
-        assertEquals(Fireplace.ENABLED, fireplace1.getStatus());
-        assertEquals(Fireplace.ENABLED, fireplace1.getStatus());
-        assertTrue(fireplace1.getEnabled());
+        ReflectionTestUtils.setField(fireplace1, "onFire", false);
+        assertEquals(Fireplace.EXTINGUISHED, fireplace1.getStatus());
+        assertEquals(Fireplace.EXTINGUISHED, fireplace1.getStatus());
+        assertSame(false, ReflectionTestUtils.getField(fireplace1, "onFire"));
+        ReflectionTestUtils.setField(fireplace1, "onFire", true);
+        assertEquals(Fireplace.ON_FIRE, fireplace1.getStatus());
+        assertEquals(Fireplace.ON_FIRE, fireplace1.getStatus());
+        assertSame(true, ReflectionTestUtils.getField(fireplace1, "onFire"));
     }
 
     @Test
     public void fireUp() {
-        assertEquals(Fireplace.DISABLED, fireplace1.getStatus());
+        assertEquals(Fireplace.EXTINGUISHED, fireplace1.getStatus());
         fireplace1.fireUp();
-        assertEquals(Fireplace.ENABLED, fireplace1.getStatus());
+        assertEquals(Fireplace.ON_FIRE, fireplace1.getStatus());
         fireplace1.fireUp();
-        assertEquals(Fireplace.ENABLED, fireplace1.getStatus());
+        assertEquals(Fireplace.ON_FIRE, fireplace1.getStatus());
         fireplace1.fireUp();
         fireplace1.fireUp();
-        assertEquals(Fireplace.ENABLED, fireplace1.getStatus());
+        assertEquals(Fireplace.ON_FIRE, fireplace1.getStatus());
     }
 
     @Test
     public void extinguish() {
         fireplace1.setEnabled(false);
         fireplace1.extinguish();
-        assertEquals(Fireplace.DISABLED, fireplace1.getStatus());
+        assertEquals(Fireplace.EXTINGUISHED, fireplace1.getStatus());
         fireplace1.extinguish();
-        assertEquals(Fireplace.DISABLED, fireplace1.getStatus());
+        assertEquals(Fireplace.EXTINGUISHED, fireplace1.getStatus());
         fireplace1.extinguish();
         fireplace1.extinguish();
-        assertEquals(Fireplace.DISABLED, fireplace1.getStatus());
+        assertEquals(Fireplace.EXTINGUISHED, fireplace1.getStatus());
     }
 
     @Test
-    public void testHasSameAttributes(){
+    public void testHasSameAttributes() {
         assertTrue(fireplace1.hasSameAttributes(fireplace2));
         fireplace1.setEnabled(true);
         assertFalse(fireplace1.hasSameAttributes(fireplace2));
