@@ -16,17 +16,17 @@ public class DeviceTest {
 
     @Test
     public void getEnabled() {
-        assertFalse(device1.getEnabled());
-        assertFalse(device1.getEnabled());
+        assertFalse(device1.isEnabled());
+        assertFalse(device1.isEnabled());
         device1.setEnabled(false);
-        assertFalse(device1.getEnabled());
+        assertFalse(device1.isEnabled());
         device1.setEnabled(true);
-        assertTrue(device1.getEnabled());
-        assertTrue(device1.getEnabled());
+        assertTrue(device1.isEnabled());
+        assertTrue(device1.isEnabled());
         device1.setEnabled(true);
-        assertTrue(device1.getEnabled());
+        assertTrue(device1.isEnabled());
         device1.setEnabled(false);
-        assertFalse(device1.getEnabled());
+        assertFalse(device1.isEnabled());
     }
 
     @Test
