@@ -1,16 +1,14 @@
 package io.patriotframework.virtualsmarthomeplus.controllers.fireplace;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import io.patriotframework.virtualsmarthomeplus.controllers.DeviceControllerTestBase;
+import io.patriotframework.virtualsmarthomeplus.controllers.DeviceControllerFunctionalTestBase;
 
 import io.patriotframework.virtualsmarthomeplus.house.devices.Device;
 import io.patriotframework.virtualsmarthomeplus.house.devices.finalDevices.Fireplace;
 import org.json.JSONException;
 import org.json.JSONObject;
-import com.fasterxml.jackson.databind.JsonNode;
 
-public class FireplaceControllerFunctionalTest extends DeviceControllerTestBase {
+public class FireplaceControllerFunctionalTest extends DeviceControllerFunctionalTestBase {
 
     public FireplaceControllerFunctionalTest() throws JSONException, JsonProcessingException {
         super();
