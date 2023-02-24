@@ -3,7 +3,7 @@ package io.patriotframework.virtualsmarthomeplus.controllers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.patriotframework.virtualsmarthomeplus.controllers.house.TestDevice;
+import io.patriotframework.virtualsmarthomeplus.MockDevice;
 import io.patriotframework.virtualsmarthomeplus.house.House;
 import io.patriotframework.virtualsmarthomeplus.house.devices.Device;
 import io.patriotframework.virtualsmarthomeplus.house.devices.finalDevices.Fireplace;
@@ -14,11 +14,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.*;
 
 import static io.restassured.RestAssured.given;
+import static io.restassured.RestAssured.when;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-public abstract class DeviceControllerTestBase {
+public abstract class DeviceControllerFunctionalTestBase {
     protected Device minPostDevice;
     protected Device fullDefaultDevice;
     protected Device fullUpdatedDevice;
@@ -33,7 +34,7 @@ public abstract class DeviceControllerTestBase {
 
     @Autowired House house;
 
-    public DeviceControllerTestBase() throws JSONException, JsonProcessingException {
+    public DeviceControllerFunctionalTestBase() throws JSONException, JsonProcessingException {
         pathToDevices = getPathToDevices();
 
         fullDefaultDevice = getDefaultDevice();
@@ -46,15 +47,52 @@ public abstract class DeviceControllerTestBase {
         label = fullDefaultDevice.getLabel();
     }
 
-
-    //todo comments and mentiion, that it should be same device with different representations
+    /**
+     * Returns path to tested endpoint e.g. "/api/v0.1/house/device"
+     */
     protected abstract String getPathToDevices();
+
+    /**
+     * Returns JSON string which represents device with only mandatory attributes
+     *
+     * @return JSON string
+     * @throws JSONException if JSONException during creating JSON occurs
+     */
     protected abstract String getMinPostDeviceJson() throws JSONException;
+
+    /**
+     * Returns device with default setting and with the same identity as device from {@link #getFullUpdatedDevice()}
+     *
+     * @return device of the class which is under test with default setting
+     */
     protected abstract Device getDefaultDevice();
+
+    /**
+     * Returns device with the same identity as device from {@link #getDefaultDevice()}
+     *
+     * @return device of the class which is under test with some updated attribute
+     */
     protected abstract Device getFullUpdatedDevice();
 
     @Test
-    public void validPost() throws JsonProcessingException {
+    public void getReturnsObject() {
+        house.addDevice(fullDefaultDevice);
+
+        when().get(pathToDevices + "/" + label)
+                .then().statusCode(200).body(equalTo(fullDefaultDeviceJson));
+
+        assertTrue(fullDefaultDevice.hasSameAttributes(house.getDevice(label)));
+    }
+
+    @Test
+    public void getNonExistentDeviceReturns404() {
+        when().get(pathToDevices + "/nonExistent")
+                .then().statusCode(404);
+    }
+
+
+    @Test
+    public void validPost() {
         given().body(fullDefaultDevice.toString())
                 .when().post(pathToDevices)
                 .then().statusCode(200).body(equalTo(fullDefaultDevice));
@@ -64,7 +102,7 @@ public abstract class DeviceControllerTestBase {
 
     @Test
     public void postAlreadyPresentDeviceReturns409() {
-        house.putDevice(fullDefaultDevice);
+        house.addDevice(fullDefaultDevice);
 
         given().body(fullUpdatedDevice.toString())
                 .when().post(pathToDevices)
@@ -108,7 +146,7 @@ public abstract class DeviceControllerTestBase {
 
     @Test
     public void validDelete() {
-        house.putDevice(fullDefaultDevice);
+        house.addDevice(fullDefaultDevice);
 
         given()
                 .when().delete(pathToDevices + "/" + label)
@@ -129,7 +167,7 @@ public abstract class DeviceControllerTestBase {
     @Test
     public void updateDefaultDevice() {
         fullUpdatedDeviceJson.get("label");
-        house.putDevice(fullDefaultDevice);
+        house.addDevice(fullDefaultDevice);
 
         given().body(fullUpdatedDevice.toString())
                 .when().put(pathToDevices + "/" + label)
@@ -139,9 +177,17 @@ public abstract class DeviceControllerTestBase {
     }
 
     @Test
+    public void putNonExistentDeviceReturns404() {
+
+        given().body(fullDefaultDevice.toString())
+                .when().put(pathToDevices + "/nonExistent")
+                .then().statusCode(404);
+    }
+
+    @Test
     public void putWithMissingMandatoryAttributeReturns400() {
         fullDefaultDeviceJson.remove("label");
-        house.putDevice(fullDefaultDevice);
+        house.addDevice(fullDefaultDevice);
 
         given().body(fullDefaultDevice.toString())
                 .when().put(pathToDevices + "/" + label)
@@ -152,7 +198,7 @@ public abstract class DeviceControllerTestBase {
 
     @Test
     public void putWithSuperfluousAttributeReturns400() {
-        house.putDevice(fullDefaultDevice);
+        house.addDevice(fullDefaultDevice);
         fullDefaultDeviceJson.put("Superfluous", true);
 
         given().body(fullDefaultDevice.toString())
@@ -164,7 +210,7 @@ public abstract class DeviceControllerTestBase {
 
     @Test
     public void putAttributeWithWrongValueReturns400() {
-        house.putDevice(fullDefaultDevice);
+        house.addDevice(fullDefaultDevice);
         fullDefaultDeviceJson.put("label", "newLabel");
 
         given().body(fullDefaultDevice.toString())
@@ -176,10 +222,10 @@ public abstract class DeviceControllerTestBase {
 
     @Test
     public void getAllDevicesOfGivenType() {
-        Device secondFullDefaultDevice = fullDefaultDevice.createWithSameState("label2");
-        house.putDevice(fullDefaultDevice);
-        house.putDevice(secondFullDefaultDevice);
-        house.putDevice(new TestDevice("label3"));
+        Device secondFullDefaultDevice = fullDefaultDevice.createWithSameAttributes("label2");
+        house.addDevice(fullDefaultDevice);
+        house.addDevice(secondFullDefaultDevice);
+        house.addDevice(new MockDevice("label3"));
         TreeSet<Device> tsGiven = new TreeSet<>();
         TreeSet<Device> tsExpected = new TreeSet<>();
         tsExpected.add(fullDefaultDevice);
@@ -197,6 +243,6 @@ public abstract class DeviceControllerTestBase {
     public void getEmptyListOfDevicesOfGivenType() throws JsonProcessingException {
         given()
                 .when().get(pathToDevices)
-                .then().statusCode(200).body(equalTo(jsonMapper.writeValueAsString(new TreeSet<>())));
+                .then().statusCode(200).body(equalTo(jsonMapper.writeValueAsString(jsonMapper.createArrayNode())));
     }
 }
