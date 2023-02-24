@@ -1,12 +1,12 @@
 package io.patriotframework.virtualsmarthomeplus.controllers.door;
 
-import io.patriotframework.virtualsmarthomeplus.controllers.DeviceTestFactory;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import io.patriotframework.virtualsmarthomeplus.controllers.fireplace.FireplaceControllerFunctionalTest;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.jupiter.api.DynamicTest;
-import org.junit.jupiter.api.TestFactory;
 
-public class DoorControllerFunctionalTest {
+public class DoorControllerFunctionalTest  {
+    FireplaceControllerFunctionalTest a = new FireplaceControllerFunctionalTest();
     String doorURN = "/api/v0.1/house/device/door";
 
     JSONObject minPostFireplace = new JSONObject()
@@ -20,12 +20,6 @@ public class DoorControllerFunctionalTest {
             .put("label", "label1")
             .put("enabled", true);
 
-    public DoorControllerFunctionalTest() throws JSONException {
+    public DoorControllerFunctionalTest() throws JSONException, JsonProcessingException {
     }
-
-//    @TestFactory
-//    Iterable<DynamicTest>commonTests(){
-//        DeviceTestFactory dtf = new DeviceTestFactory();
-//        return dtf.getTests(doorURN);
-//    }
 }
