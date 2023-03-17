@@ -1,6 +1,9 @@
 package io.patriotframework.virtualsmarthomeplus.house.devices;
 
+import io.patriotframework.virtualsmarthomeplus.house.House;
 import org.apache.commons.lang3.NotImplementedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 
@@ -11,14 +14,23 @@ import java.util.Objects;
 public abstract class Device implements Comparable<Device> {
     private final String label;
     private Boolean enabled = false;
+    private static final Logger LOGGER = LoggerFactory.getLogger(House.class);
 
     /**
      * Creates new device with given label.
      *
      * @param label label creates identity of the device and is compared in the equals method
+     * @throws IllegalArgumentException if given label is null or blank
      */
     public Device(String label) {
+        if(label == null) {
+            throw new IllegalArgumentException("Parameter 'label' for the new device can't be null");
+        }
+        if(label.isBlank()) {
+            throw new IllegalArgumentException("Parameter 'label' for the new device can't blank");
+        }
         this.label = label;
+        LOGGER.debug(String.format("Device %s created", label));
     }
 
     /**
@@ -27,9 +39,21 @@ public abstract class Device implements Comparable<Device> {
      *
      * @param origDevice new device copies values of given device
      * @param newLabel   label creates identity of the device and is compared in the equals method
+     * @throws IllegalArgumentException if given label is null or blank
      */
     public Device(Device origDevice, String newLabel) {
-        throw new NotImplementedException("Not implemented yet.");
+        if(origDevice == null) {
+            throw new IllegalArgumentException("Parameter 'origDevice' can't be null");
+        }
+        if(newLabel == null) {
+            throw new IllegalArgumentException("Parameter 'label' can't be null");
+        }
+        if(newLabel.isBlank()) {
+            throw new IllegalArgumentException("Parameter 'label' can't blank");
+        }
+        this.label = newLabel;
+        enabled = origDevice.enabled;
+        LOGGER.debug(String.format("Device %s created", label));
     }
 
     /**
@@ -56,7 +80,12 @@ public abstract class Device implements Comparable<Device> {
      * @param enabled if true, device will react to commands
      */
     public void setEnabled(Boolean enabled) {
+        if(enabled != this.enabled) {
+            LOGGER.debug(String
+                    .format("Device %s changed it's property enabled from: %s to: %s", label, this.enabled, enabled));
+        }
         this.enabled = enabled;
+
     }
 
     /**
@@ -74,9 +103,21 @@ public abstract class Device implements Comparable<Device> {
      */
     public abstract boolean hasSameAttributes(Device device) throws IllegalArgumentException;
 
+    /**
+     * Compares device with given device based on the lexicographic arrangement of their names
+     *
+     * @param compared the object to be compared with.
+     * @return  0 if the devices label is equal to the other compared devices label.
+     *          < 0 if the label is lexicographically less than the other label
+     *          > 0 if the label is lexicographically greater than the other string
+     * @throws IllegalArgumentException if the compared device is null
+     */
     @Override
-    public int compareTo(Device compareTo) {
-        throw new NotImplementedException("Not implemented yet.");
+    public int compareTo(Device compared) {
+        if(compared == null) {
+            throw new IllegalArgumentException("Compared device must not be null");
+        }
+        return label.compareTo(compared.getLabel());
     }
 
     @Override
