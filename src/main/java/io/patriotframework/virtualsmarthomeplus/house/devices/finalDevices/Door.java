@@ -1,7 +1,10 @@
 package io.patriotframework.virtualsmarthomeplus.house.devices.finalDevices;
 
+import io.patriotframework.virtualsmarthomeplus.house.House;
 import io.patriotframework.virtualsmarthomeplus.house.devices.Device;
 import org.apache.commons.lang3.NotImplementedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -10,6 +13,7 @@ import org.apache.commons.lang3.NotImplementedException;
 public class Door extends Device {
 
     private boolean opened = false;
+    private static final Logger LOGGER = LoggerFactory.getLogger(House.class);
 
     public static final String OPENED = "opened";
     public static final String CLOSED = "closed";
@@ -24,17 +28,36 @@ public class Door extends Device {
     }
 
     /**
+     * Creates new door with the same values of the attributes as given door except label.
+     * Label of the new door is given by parameter.
+     *
+     * @param origDoor new door copies values of given device
+     * @param newLabel   label creates identity of the door and is compared in the equals method
+     * @throws IllegalArgumentException if given label is null or blank
+     */
+    public Door(Door origDoor, String newLabel) {
+        super(origDoor, newLabel);
+        opened = origDoor.opened;
+    }
+
+    /**
      * Opens the door.
      */
     public void open() {
-        throw new NotImplementedException("Not implemented yet.");
+        if (!opened) {
+            opened = true;
+            LOGGER.debug(String.format("Door %s opened", getLabel()));
+        }
     }
 
     /**
      * Closes the door.
      */
     public void close() {
-        throw new NotImplementedException("Not implemented yet.");
+        if (opened) {
+            opened = false;
+            LOGGER.debug(String.format("Door %s closed", getLabel()));
+        }
     }
 
     /**
@@ -46,13 +69,31 @@ public class Door extends Device {
         return opened ? OPENED : CLOSED;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Door createWithSameAttributes(String newLabel) {
-        throw new NotImplementedException("Not implemented yet.");
+        return new Door(this, newLabel);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public boolean hasSameAttributes(Device device) throws IllegalArgumentException {
-        throw new NotImplementedException("Not implemented yet.");
+    public boolean hasSameAttributes(Device door) throws IllegalArgumentException {
+        if(door == null) {
+            throw new IllegalArgumentException("Door cannot be null");
+        }
+        if(getClass() != door.getClass()) {
+            throw new IllegalArgumentException("device must be of class Door");
+        }
+
+        Door typedDoor = (Door)door;
+
+        if(isEnabled() != typedDoor.isEnabled()) {
+            return false;
+        }
+        return typedDoor.opened == opened;
     }
 }
