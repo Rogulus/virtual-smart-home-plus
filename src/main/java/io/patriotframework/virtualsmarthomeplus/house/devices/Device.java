@@ -1,7 +1,6 @@
 package io.patriotframework.virtualsmarthomeplus.house.devices;
 
 import io.patriotframework.virtualsmarthomeplus.house.House;
-import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,7 +9,6 @@ import java.util.Objects;
 /**
  * From this class will be derived Actuators and Sensors. From them will be then derived final devices.
  */
-
 public abstract class Device implements Comparable<Device> {
     private final String label;
     private Boolean enabled = false;

@@ -1,8 +1,9 @@
 package io.patriotframework.virtualsmarthomeplus.house.devices.finalDevices;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import io.patriotframework.virtualsmarthomeplus.house.House;
 import io.patriotframework.virtualsmarthomeplus.house.devices.Device;
-import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,6 +11,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Representation of door device.
  */
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class Door extends Device {
 
     private boolean opened = false;
@@ -23,6 +25,7 @@ public class Door extends Device {
      *
      * @param label label creates identity of the door and is compared in the equals method
      */
+    @JsonCreator
     public Door(String label) {
         super(label);
     }

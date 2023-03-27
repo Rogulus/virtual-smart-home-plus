@@ -1,5 +1,7 @@
 package io.patriotframework.virtualsmarthomeplus.house.devices.finalDevices;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.patriotframework.virtualsmarthomeplus.house.House;
 import io.patriotframework.virtualsmarthomeplus.house.devices.Device;
@@ -10,6 +12,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Representation of fireplace device.
  */
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class Fireplace extends Device {
 
     private Boolean onFire = false;
@@ -23,6 +26,7 @@ public class Fireplace extends Device {
      *
      * @param label label creates identity of the fireplace and is compared in the equals method
      */
+    @JsonCreator
     public Fireplace(String label) {
         super(label);
     }
