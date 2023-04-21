@@ -1,11 +1,12 @@
 package io.patriotframework.virtualsmarthomeplus.controllers;
 
 import io.patriotframework.virtualsmarthomeplus.APIRoutes;
+import io.patriotframework.virtualsmarthomeplus.DTOs.DeviceDTO;
+import io.patriotframework.virtualsmarthomeplus.DTOs.DoorDTO;
+import io.patriotframework.virtualsmarthomeplus.Mapper.DTOMapper;
 import io.patriotframework.virtualsmarthomeplus.house.House;
-import io.patriotframework.virtualsmarthomeplus.house.devices.Device;
-import io.patriotframework.virtualsmarthomeplus.house.devices.finalDevices.Door;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import javax.validation.Valid;
 
 
 /**
@@ -15,9 +16,8 @@ import org.springframework.web.bind.annotation.*;
 public class DoorController extends FinalDeviceHandling {
     private static final String DOOR_ID_ROUTE = APIRoutes.DOOR_ROUTE + "{label}";
 
-    @Autowired
-    DoorController(House house) {
-        super(house);
+    DoorController(House house, DTOMapper dtoMapper) {
+        super(house, dtoMapper);
     }
 
     /**
@@ -27,8 +27,8 @@ public class DoorController extends FinalDeviceHandling {
      * @return door if present in the house
      */
     @GetMapping(DOOR_ID_ROUTE)
-    public Device getDoor(@PathVariable String label, @PathVariable String apiVersion) {
-        return handleGet(label, Door.class, apiVersion);
+    public DeviceDTO getDoor(@PathVariable String label, @PathVariable String apiVersion) {
+        return handleGet(label, DoorDTO.class, apiVersion);
     }
 
     /**
@@ -38,7 +38,7 @@ public class DoorController extends FinalDeviceHandling {
      * @return door added to the house
      */
     @PostMapping(APIRoutes.DOOR_ROUTE)
-    public Device postDoor(@RequestBody Door device, @PathVariable String apiVersion) {
+    public DeviceDTO postDoor(@Valid @RequestBody DoorDTO device, @PathVariable String apiVersion) {
         return handlePost(device, apiVersion);
     }
 
@@ -49,7 +49,7 @@ public class DoorController extends FinalDeviceHandling {
      * @return door updated or added to the house
      */
     @PutMapping(APIRoutes.DOOR_ROUTE)
-    public Device putDoor(@RequestBody Door device, @PathVariable String apiVersion) {
+    public DeviceDTO putDoor(@Valid @RequestBody DoorDTO device, @PathVariable String apiVersion) {
         return handlePut(device, apiVersion);
     }
 
@@ -61,6 +61,6 @@ public class DoorController extends FinalDeviceHandling {
      */
     @DeleteMapping(DOOR_ID_ROUTE)
     public String deleteDoor(@PathVariable String label, @PathVariable String apiVersion) {
-        return handleDelete(label, Door.class, apiVersion);
+        return handleDelete(label, DoorDTO.class, apiVersion);
     }
 }
