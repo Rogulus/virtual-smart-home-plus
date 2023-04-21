@@ -1,40 +1,43 @@
 package io.patriotframework.virtualsmarthomeplus.house;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import io.patriotframework.virtualsmarthomeplus.DTOs.DeviceDTO;
+import io.patriotframework.virtualsmarthomeplus.Mapper.DTOMapper;
 import io.patriotframework.virtualsmarthomeplus.house.devices.Device;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
 import javax.management.openmbean.KeyAlreadyExistsException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
  * This class is responsible for management of {@code Device} used in the Virtual Smart Home.
  */
 @Service
-@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class House {
 
+    DTOMapper dtoMapper;
     private static final Logger LOGGER = LoggerFactory.getLogger(House.class);
     private final Map<String, Device> devices = new ConcurrentHashMap<>();
+
+    public House(DTOMapper dtoMapper) {
+        this.dtoMapper = dtoMapper;
+    }
 
     /**
      * Puts new device to the house object.
      *
-     * @param device actual instance of device
+     * @param deviceDto actual instance of device
      * @throws IllegalArgumentException if device is null
      * @throws KeyAlreadyExistsException if device with given label is already present in the house
      */
-    public void addDevice(Device device) throws IllegalArgumentException, KeyAlreadyExistsException {
-        if(device == null) {
+    public void addDevice(DeviceDTO deviceDto) throws IllegalArgumentException, KeyAlreadyExistsException {
+        if(deviceDto == null) {
             throw new IllegalArgumentException("Device cannot be null");
         }
+        Device device = dtoMapper.map(deviceDto);
         final Device origDevice = devices.putIfAbsent(device.getLabel(), device);
         if (origDevice != null) {
             throw new KeyAlreadyExistsException(
@@ -50,24 +53,26 @@ public class House {
      * @return instance of device with given label, null if device is not present in the house
      * @throws IllegalArgumentException if label is null
      */
-    public Device getDevice(String label) throws IllegalArgumentException {
+    public DeviceDTO getDevice(String label) throws IllegalArgumentException {
         if(label == null) {
             throw new IllegalArgumentException("Label can't be null.");
         }
-        return devices.get(label);
+        //return deviceMapper.deviceToDto(devices.get(label));
+        return dtoMapper.map(devices.get(label));
     }
 
     /**
      * Updates device from the house.
      *
-     * @param device device with updated values (device is specified by its label)
+     * @param deviceDto device with updated values (device is specified by its label)
      * @throws IllegalArgumentException if device is null
      * @throws NoSuchElementException if no device with given label is not present in the house
      */
-    public void updateDevice(Device device) throws IllegalArgumentException, NoSuchElementException {
-        if(device == null)  {
+    public void updateDevice(DeviceDTO deviceDto) throws IllegalArgumentException, NoSuchElementException {
+        if(deviceDto == null)  {
             throw new IllegalArgumentException("Device can't be null");
         }
+        Device device = dtoMapper.map(deviceDto);
         final Device origDevice = devices.get(device.getLabel());
         if(origDevice== null) {
             throw new NoSuchElementException(
@@ -104,12 +109,16 @@ public class House {
     /**
      * Provides devices of certain type which are stored in house.
      *
-     * @param deviceOfType type of requested devices
-     * @return set of devices of requested type, Empty set if such device does not exist
+     * @param deviceDtoType type of requested devices
+     * @return map of labels and devices of requested type, Empty set if such device does not exist
      */
-    public HashMap<String, Device> getDevicesOfType(Class<? extends Device> deviceOfType) {
-        return (HashMap<String, Device>) devices.values().stream()
-                .filter(x -> x.getClass().equals(deviceOfType))
-                .collect(Collectors.toMap(Device::getLabel, Function.identity()));
+    public Map<String, DeviceDTO> getDevicesOfType(Class<? extends DeviceDTO> deviceDtoType) {
+        Class<?extends Device> deviceType = dtoMapper.mapDtoClassType(deviceDtoType);
+
+        Map<String, DeviceDTO> res = devices.entrySet().stream()
+                .filter(x -> deviceType.isAssignableFrom(x.getValue().getClass()))
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> dtoMapper.map(e.getValue())));
+        System.out.println(res);
+        return res;
     }
 }
