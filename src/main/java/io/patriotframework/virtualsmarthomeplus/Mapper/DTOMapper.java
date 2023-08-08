@@ -14,7 +14,7 @@ import io.patriotframework.virtualsmarthomeplus.house.devices.finalDevices.RGBLi
 import io.patriotframework.virtualsmarthomeplus.house.devices.finalDevices.Thermometer;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeMap;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.stream.Collectors;
@@ -22,29 +22,11 @@ import java.util.stream.Collectors;
 /**
  * Class responsible for mapping model objects to DTOs
  */
-@Component
+@Service
 public class DTOMapper {
-    private static final HashMap<Class<? extends Device>, Class<? extends DeviceDTO>> CLASS_TO_DTO;
-    private static final HashMap<Class<? extends DeviceDTO>, Class<? extends Device>> DTO_TO_CLASS;
+    private final HashMap<Class<? extends Device>, Class<? extends DeviceDTO>> classToDtoMap = new HashMap<>();
+    private final HashMap<Class<? extends DeviceDTO>, Class<? extends Device>> dtoToClassMap = new HashMap<>();
 
-    static {
-        CLASS_TO_DTO = new HashMap<>();
-        CLASS_TO_DTO.put(Device.class, DeviceDTO.class);
-        CLASS_TO_DTO.put(Fireplace.class, FireplaceDTO.class);
-        CLASS_TO_DTO.put(Door.class, DoorDTO.class);
-        CLASS_TO_DTO.put(Thermometer.class, ThermometerDTO.class);
-        CLASS_TO_DTO.put(RGBLight.class, RGBLightDTO.class);
-    }
-
-    static {
-        DTO_TO_CLASS = new HashMap<>();
-        DTO_TO_CLASS.put(DeviceDTO.class, Device.class);
-        DTO_TO_CLASS.put(FireplaceDTO.class, Fireplace.class);
-        DTO_TO_CLASS.put(DoorDTO.class, Door.class);
-        DTO_TO_CLASS.put(ThermometerDTO.class, Thermometer.class);
-        DTO_TO_CLASS.put(RGBLightDTO.class, RGBLight.class);
-
-    }
 
     private final ModelMapper modelMapper;
 
@@ -54,6 +36,18 @@ public class DTOMapper {
      * @param modelMapper instance of ModelMapper
      */
     public DTOMapper(ModelMapper modelMapper) {
+        classToDtoMap.put(Device.class, DeviceDTO.class);
+        classToDtoMap.put(Fireplace.class, FireplaceDTO.class);
+        classToDtoMap.put(Door.class, DoorDTO.class);
+        classToDtoMap.put(Thermometer.class, ThermometerDTO.class);
+        classToDtoMap.put(RGBLight.class, RGBLightDTO.class);
+
+        dtoToClassMap.put(DeviceDTO.class, Device.class);
+        dtoToClassMap.put(FireplaceDTO.class, Fireplace.class);
+        dtoToClassMap.put(DoorDTO.class, Door.class);
+        dtoToClassMap.put(ThermometerDTO.class, Thermometer.class);
+        dtoToClassMap.put(RGBLightDTO.class, RGBLight.class);
+
         this.modelMapper = modelMapper;
 
         final TypeMap<FireplaceDTO, Fireplace> fireplaceTypeMap = this.modelMapper
@@ -111,11 +105,11 @@ public class DTOMapper {
      * @throws DeviceMappingNotSupportedException if class of DTO is unknown for the mapper
      */
     public DeviceDTO map(Device device) throws DeviceMappingNotSupportedException {
-        if (!CLASS_TO_DTO.containsKey(device.getClass())) {
+        if (!classToDtoMap.containsKey(device.getClass())) {
             throw new DeviceMappingNotSupportedException(
                     String.format("Device %s is not supported by DeviceMapper", device.getClass()));
         }
-        return modelMapper.map(device, CLASS_TO_DTO.get(device.getClass()));
+        return modelMapper.map(device, classToDtoMap.get(device.getClass()));
     }
 
     /**
@@ -126,11 +120,11 @@ public class DTOMapper {
      * @throws DeviceMappingNotSupportedException if class of DTO is unknown for the mapper
      */
     public Device map(DeviceDTO dto) throws DeviceMappingNotSupportedException {
-        if (!DTO_TO_CLASS.containsKey(dto.getClass())) {
+        if (!this.dtoToClassMap.containsKey(dto.getClass())) {
             throw new DeviceMappingNotSupportedException(
                     String.format("DeviceDTO %s is not supported by DeviceMapper", dto.getClass()));
         }
-        return modelMapper.map(dto, DTO_TO_CLASS.get(dto.getClass()));
+        return modelMapper.map(dto, this.dtoToClassMap.get(dto.getClass()));
     }
 
     /**
@@ -142,7 +136,7 @@ public class DTOMapper {
      */
     public Class<? extends Device> mapDtoClassType(Class<? extends DeviceDTO> dto)
             throws DeviceMappingNotSupportedException {
-        final Class<? extends Device> result = DTO_TO_CLASS.get(dto);
+        final Class<? extends Device> result = this.dtoToClassMap.get(dto);
         if (result == null) {
             throw new DeviceMappingNotSupportedException(
                     String.format("DeviceDTO %s is not supported by DeviceMapper", dto));
@@ -158,7 +152,7 @@ public class DTOMapper {
      * @throws DeviceMappingNotSupportedException if class of device is unknown for the mapper
      */
     public Class<? extends DeviceDTO> mapDeviceClassType(Class<? extends Device> device) {
-        final Class<? extends DeviceDTO> result = CLASS_TO_DTO.get(device);
+        final Class<? extends DeviceDTO> result = classToDtoMap.get(device);
         if (result == null) {
             throw new DeviceMappingNotSupportedException(
                     String.format("Device %s is not supported by DeviceMapper", device));
