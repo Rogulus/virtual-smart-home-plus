@@ -23,7 +23,7 @@ public class DeviceDTO {
     /**
      * Type of the device
      */
-    @NotEmpty
+    @NotEmpty(message = "device type must be specified")
     private String deviceType;
     /**
      * True if device is enabled
