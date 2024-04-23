@@ -22,7 +22,7 @@ import javax.validation.constraints.NotNull;
 
 @RestController
 public class ThermometerController extends FinalDeviceHandling {
-    public static final String THERMOMETER_ID_ROUTE = APIRoutes.THERMOMETER_ROUTE + "{label}";
+    public static final String THERMOMETER_ID_ROUTE = APIRoutes.THERMOMETER_ROUTE + "/{label}";
 
     public static final String THERMOMETER_GET_TEMPERATURE = THERMOMETER_ID_ROUTE + "/getTemperature";
 

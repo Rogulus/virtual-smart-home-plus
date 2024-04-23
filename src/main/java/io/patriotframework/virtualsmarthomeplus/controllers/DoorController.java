@@ -28,7 +28,7 @@ import javax.validation.constraints.NotNull;
  */
 @RestController
 public class DoorController extends FinalDeviceHandling {
-    private static final String DOOR_ID_ROUTE = APIRoutes.DOOR_ROUTE + "{label}";
+    private static final String DOOR_ID_ROUTE = APIRoutes.DOOR_ROUTE + "/{label}";
 
     DoorController(House house) {
         super(house);

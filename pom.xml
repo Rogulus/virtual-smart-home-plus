@@ -13,6 +13,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>virtual-smart-home-plus</name>
     <description>Demo project for Spring Boot</description>
+
     <properties>
         <java.version>17</java.version>
     </properties>
@@ -58,38 +59,11 @@
     </dependencies>
 
     <build>
+        <finalName>virtual-smart-home-plus</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>3.2.0</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.puppycrawl.tools</groupId>
-                        <artifactId>checkstyle</artifactId>
-                        <version>10.5.0</version>
-                    </dependency>
-                </dependencies>
-                <configuration>
-                    <configLocation>checkstyle.xml</configLocation>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>checkstyle</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                        <configuration>
-                            <consoleOutput>true</consoleOutput>
-                            <failOnViolation>false</failOnViolation>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>

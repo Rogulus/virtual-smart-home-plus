@@ -145,9 +145,9 @@ public class FireplaceApiTest {
 
     @Test
     public void shouldDeleteMapping() throws Exception {
-        Fireplace fireplace = new Fireplace("1");
+        Fireplace fireplace = new Fireplace("firePlace1");
         house.addDevice(fireplace);
-        this.mockMvc.perform(MockMvcRequestBuilders.delete("/api/v0.1/house/device/fireplace/1")
+        this.mockMvc.perform(MockMvcRequestBuilders.delete("/api/v0.1/house/device/fireplace/firePlace1")
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().is2xxSuccessful())

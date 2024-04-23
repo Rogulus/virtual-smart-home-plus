@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 public class DeviceController {
-    private static final String DEVICE_ID_ROUTE = APIRoutes.DEVICE_ROUTE + "{label}";
+    private static final String DEVICE_ID_ROUTE = APIRoutes.DEVICE_ROUTE + "/{label}";
     private final House house;
     private final DTOMapper dtoMapper;
     @Autowired

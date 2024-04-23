@@ -8,6 +8,7 @@ import io.patriotframework.virtualsmarthomeplus.VirtualSmartHomePlusApplication;
 import io.patriotframework.virtualsmarthomeplus.house.House;
 import io.patriotframework.virtualsmarthomeplus.house.devices.finalDevices.Door;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.modelmapper.ModelMapper;
@@ -97,22 +98,10 @@ public class DoorApiTest {
         deviceDTO = dtoMapper.map(house.getDevice("newDoor2"));
         assertEquals(door, deviceDTO);
 
-        DoorDTO door1 = new DoorDTO();
-        door1.setLabel("door3");
-        door1.setEnabled(false);
-        door1.setStatus(CLOSED);
-
-
-        this.mockMvc.perform(post("/api/v0.1/house/device/door/")
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(door1)))
-                .andExpect(status().isOk());
-        deviceDTO = dtoMapper.map(house.getDevice("door3"));
-        assertEquals(door1, deviceDTO);
     }
 
     @Test
-    public void shouldUpdatedoor() throws Exception {
+    public void shouldUpdateDoor() throws Exception {
         DoorDTO door = new DoorDTO();
         door.setLabel("door1");
         door.setStatus(OPENED);

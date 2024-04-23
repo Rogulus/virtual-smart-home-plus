@@ -44,4 +44,9 @@ public class HouseController {
                 HttpStatus.NOT_FOUND, String.format("Unknown api version: %s", apiVersion) // 404
         );
     }
+
+    @GetMapping()
+    public String getStatus() {
+        return "OK";
+    }
 }

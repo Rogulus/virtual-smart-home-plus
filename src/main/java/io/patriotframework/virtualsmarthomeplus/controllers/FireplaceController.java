@@ -25,7 +25,7 @@ import javax.validation.constraints.NotNull;
  */
 @RestController
 public class FireplaceController extends FinalDeviceHandling {
-    private static final String FIREPLACE_ID_ROUTE = APIRoutes.FIREPLACE_ROUTE + "{label}";
+    private static final String FIREPLACE_ID_ROUTE = APIRoutes.FIREPLACE_ROUTE + "/{label}";
 
 
     FireplaceController(House house) {

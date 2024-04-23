@@ -23,7 +23,7 @@ import javax.validation.constraints.NotNull;
 
 @RestController
 public class RGBLightController extends FinalDeviceHandling {
-    private static final String RGB_LIGHT_ID_ROUTE = APIRoutes.RGB_LIGHT_ROUTE + "{label}";
+    private static final String RGB_LIGHT_ID_ROUTE = APIRoutes.RGB_LIGHT_ROUTE + "/{label}";
 
     RGBLightController(House house) {
         super(house);
