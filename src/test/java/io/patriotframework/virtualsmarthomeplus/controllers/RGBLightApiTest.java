@@ -53,7 +53,7 @@ public class RGBLightApiTest {
     public void shouldFetchDevice() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
         RGBLightDTO rgbLightDTO = (RGBLightDTO) dtoMapper.map(house.getDevice("rgb1"));
-        MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders.get("/api/v0.1/house/device/RGBLight/rgb1")
+        MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders.get("/api/v0.1/house/device/rgb/rgb1")
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().is(200))
@@ -79,7 +79,7 @@ public class RGBLightApiTest {
         rgb.setEnabled(false);
 
         ObjectMapper objectMapper = new ObjectMapper();
-        this.mockMvc.perform(post("/api/v0.1/house/device/RGBLight/")
+        this.mockMvc.perform(post("/api/v0.1/house/device/rgb/")
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(rgb)))
                 .andExpect(status().isOk());
@@ -94,7 +94,7 @@ public class RGBLightApiTest {
         rgb1.setRed(0);
         rgb1.setEnabled(false);
 
-        this.mockMvc.perform(post("/api/v0.1/house/device/RGBLight/")
+        this.mockMvc.perform(post("/api/v0.1/house/device/rgb/")
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(rgb1)))
                 .andExpect(status().isOk());
@@ -108,7 +108,7 @@ public class RGBLightApiTest {
         rgb.setLabel("rgb1");
         rgb.setRed(25);
         ObjectMapper objectMapper = new ObjectMapper();
-        this.mockMvc.perform(MockMvcRequestBuilders.put("/api/v0.1/house/device/RGBLight/rgb1")
+        this.mockMvc.perform(MockMvcRequestBuilders.put("/api/v0.1/house/device/rgb/rgb1")
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(rgb))
                 )
@@ -119,7 +119,7 @@ public class RGBLightApiTest {
 
         rgb.setLabel("newRgb1");
         rgb.setRed(25);
-        this.mockMvc.perform(MockMvcRequestBuilders.put("/api/v0.1/house/device/RGBLight/newRgb1")
+        this.mockMvc.perform(MockMvcRequestBuilders.put("/api/v0.1/house/device/rgb/newRgb1")
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(rgb))
                 )
@@ -135,7 +135,7 @@ public class RGBLightApiTest {
         rgb.setGreen(40);
         rgb.setBlue(40);
 
-        this.mockMvc.perform(MockMvcRequestBuilders.put("/api/v0.1/house/device/RGBLight/rgb1")
+        this.mockMvc.perform(MockMvcRequestBuilders.put("/api/v0.1/house/device/rgb/rgb1")
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(rgb))
                 )
@@ -150,7 +150,7 @@ public class RGBLightApiTest {
         rgb = new RGBLightDTO();
         rgb.setLabel("r2");
 
-        this.mockMvc.perform(MockMvcRequestBuilders.put("/api/v0.1/house/device/RGBLight/rgb1")
+        this.mockMvc.perform(MockMvcRequestBuilders.put("/api/v0.1/house/device/rgb/rgb1")
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(rgb))
                 )
@@ -161,7 +161,7 @@ public class RGBLightApiTest {
     public void shouldDeleteMapping() throws Exception {
         RGBLight rgb = new RGBLight("1");
         house.addDevice(rgb);
-        this.mockMvc.perform(MockMvcRequestBuilders.delete("/api/v0.1/house/device/RGBLight/1")
+        this.mockMvc.perform(MockMvcRequestBuilders.delete("/api/v0.1/house/device/rgb/1")
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().is2xxSuccessful())
@@ -179,14 +179,14 @@ public class RGBLightApiTest {
         rgb.setEnabled(false);
 
         ObjectMapper objectMapper = new ObjectMapper();
-        this.mockMvc.perform(post("/api/v0.1/house/device/RGBLight/")
+        this.mockMvc.perform(post("/api/v0.1/house/device/rgb/")
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(rgb)))
                 .andExpect(status().is(409));
     }
     @Test
     public void wrongApiVersion() throws Exception {
-        MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders.get("/api/v0/house/device/RGBLight/rgb1")
+        MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders.get("/api/v0/house/device/rgb/rgb1")
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().is(404))
@@ -195,7 +195,7 @@ public class RGBLightApiTest {
 
     @Test
     public void noSuchElementException() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/api/v0.1/house/device/RGBLight/rgb8")
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/api/v0.1/house/device/rgb/rgb8")
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().is(404))
@@ -214,7 +214,7 @@ public class RGBLightApiTest {
         rgb.setRed(0);
         rgb.setEnabled(false);
 
-        this.mockMvc.perform(post("/api/v0.1/house/device/RGBLight/")
+        this.mockMvc.perform(post("/api/v0.1/house/device/rgb/")
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(rgb)))
                 .andExpect(status().is(400));

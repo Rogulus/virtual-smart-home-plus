@@ -60,6 +60,17 @@ public class HouseApiTest {
             assertEquals(responseDTO.getDevices().get(i),houseDTO.getDevices().get(i));
         }
     }
+
+    @Test
+    @Order(2)
+    public void getStatus() throws Exception {
+        MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders.get("/api/v0.1/house/status")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().is(200))
+                .andReturn();
+    }
+
     @Test
     public void wrongApiVersion() throws Exception {
         MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders.get("/api/v0/house/")

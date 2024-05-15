@@ -120,9 +120,9 @@ public class RGBLight extends Actuator {
             LOGGER.debug(String.format("Red value changed to %d", this.red));
             return;
         }
-        if (red > 100) {
+        if (red > 255) {
             LOGGER.debug(String.format("Red value %d out of bound", red));
-            this.red = 100;
+            this.red = 255;
             LOGGER.debug(String.format("Red value changed to %d", this.red));
             return;
         }
@@ -151,9 +151,9 @@ public class RGBLight extends Actuator {
             LOGGER.debug(String.format("Green value changed to %d", this.green));
             return;
         }
-        if (green > 100) {
+        if (green > 255) {
             LOGGER.debug(String.format("Green value %d out of bound", green));
-            this.green = 100;
+            this.green = 255;
             LOGGER.debug(String.format("Green value changed to %d", this.green));
             return;
         }
@@ -182,9 +182,9 @@ public class RGBLight extends Actuator {
             LOGGER.debug(String.format("Blue value changed to %d", this.blue));
             return;
         }
-        if (blue > 100) {
+        if (blue > 255) {
             LOGGER.debug(String.format("Blue value %d out of bound", blue));
-            this.blue = 100;
+            this.blue = 255;
             LOGGER.debug(String.format("Blue value changed to %d", this.blue));
             return;
         }

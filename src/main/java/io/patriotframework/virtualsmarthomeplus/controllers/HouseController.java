@@ -45,7 +45,7 @@ public class HouseController {
         );
     }
 
-    @GetMapping()
+    @GetMapping(APIRoutes.HOUSE_ROUTE + APIRoutes.STATUS_ROUTE)
     public String getStatus() {
         return "OK";
     }

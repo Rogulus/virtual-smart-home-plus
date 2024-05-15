@@ -40,7 +40,8 @@ public class APIRoutes {
     /**
      * Route of the final device RGBLight.
      */
-    public static final String RGB_LIGHT_ROUTE = DEVICE_ROUTE + "/RGBLight";
+    public static final String RGB_LIGHT_ROUTE = DEVICE_ROUTE + "/rgb";
 
 
+    public static final String STATUS_ROUTE = "/status";
 }
