@@ -10,7 +10,7 @@
     </parent>
     <groupId>io.patriot-framework</groupId>
     <artifactId>virtual-smart-home-plus</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1-SNAPSHOT-DP</version>
     <name>virtual-smart-home-plus</name>
     <description>Demo project for Spring Boot</description>
 
