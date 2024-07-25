@@ -1,11 +1,11 @@
 package io.patriot_framework.virtualsmarthomeplus.utils;
 
-import io.patriot_framework.generator.device.Device;
 import io.patriot_framework.generator.utils.SerializationException;
 
-import io.patriot_framework.generator.utils.JSONSerializer;
 import io.patriot_framework.virtualsmarthomeplus.DTOs.DeviceDTO;
-import io.patriot_framework.virtualsmarthomeplus.Mapper.DTOMapper;
+import io.patriot_framework.virtualsmarthomeplus.house.devices.finalDevices.Thermometer;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
@@ -18,9 +18,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 
-public class VirtualSmartHomePlusClient {
-    public static void createDevice(String ip, int port, String deviceType, DeviceDTO device) { // todo melo by to brat Device DTO
-        device.setDeviceType(device.getClass().getName());
+public class VirtualSmartHomePlusHttpClient {
+    @Getter
+    @Setter
+    private String ip;
+
+    @Getter
+    @Setter
+    private int port;
+
+    public VirtualSmartHomePlusHttpClient(String ip, int port) {
+        this.ip = ip;
+        this.port = port;
+    }
+
+    public void putDevice(String deviceType, DeviceDTO device) { // todo melo by to brat Device DTO
+//        device.setDeviceType(device.getClass().getName());
         ObjectMapper mapper = new ObjectMapper();
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             String uri = "http://" + ip + ":" + port + "/api/v0.1/house/device/" + deviceType + "/" + device.getLabel();
@@ -41,6 +54,8 @@ public class VirtualSmartHomePlusClient {
                 // Optionally handle the response body, headers, etc.
                 String responseBody = EntityUtils.toString(response.getEntity(), "UTF-8");
                 System.out.println("Response body: " + responseBody);
+                Thermometer t;
+
             }
         } catch (IOException e) {
             // Handle exceptions
@@ -48,7 +63,7 @@ public class VirtualSmartHomePlusClient {
         }
     }
 
-    public static DeviceDTO getDevice(String ip, int port, String deviceType, String label) {
+    public DeviceDTO getDevice(String deviceType, String label) {
         String responseBody = null;
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             String uri = "http://" + ip + ":" + port + "/api/v0.1/house/device/" + deviceType + "/" + label;

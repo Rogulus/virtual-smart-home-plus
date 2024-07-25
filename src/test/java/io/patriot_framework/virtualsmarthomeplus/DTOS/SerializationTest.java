@@ -3,7 +3,6 @@ package io.patriot_framework.virtualsmarthomeplus.DTOS;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.patriot_framework.virtualsmarthomeplus.DTOs.DeviceDTO;
 import io.patriot_framework.virtualsmarthomeplus.DTOs.ThermometerDTO;
-import io.patriot_framework.virtualsmarthomeplus.utils.VirtualSmartHomePlusClient;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -18,7 +17,7 @@ public class SerializationTest {
         ThermometerDTO thermometerDTO = new ThermometerDTO();
         thermometerDTO.setUnit("C");
         thermometerDTO.setLabel("t1");
-        thermometerDTO.setDeviceType("io.patriot_framework.virtualsmarthomeplus.DTOs.ThermometerDTO");
+//        thermometerDTO.setDeviceType("io.patriot_framework.virtualsmarthomeplus.DTOs.ThermometerDTO"); todo
         String jsonThermometer = objectMapper.writeValueAsString(thermometerDTO);
         DeviceDTO deserializedThermometerDTO = objectMapper.readValue(jsonThermometer, DeviceDTO.class);
         assertEquals(thermometerDTO, deserializedThermometerDTO);

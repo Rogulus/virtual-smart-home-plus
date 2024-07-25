@@ -27,26 +27,25 @@ public class DeviceDTO {
     @NotEmpty(message = "label cannot be empty")
     private String label;
     /**
-     * Type of the device
-     */
-    @NotEmpty
-    private String deviceType;
-    /**
      * True if device is enabled
      */
     private Boolean enabled;
+
+    public DeviceDTO(String label) {
+        this.label = label;
+    }
+
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof final DeviceDTO deviceDTO)) return false;
         return Objects.equals(getLabel(), deviceDTO.getLabel())
-                && Objects.equals(getDeviceType(), deviceDTO.getDeviceType())
                 && Objects.equals(getEnabled(), deviceDTO.getEnabled());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getLabel(), getDeviceType(), getEnabled());
+        return Objects.hash(getLabel(), this.getClass().getName(), getEnabled());
     }
 }

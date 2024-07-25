@@ -2,6 +2,7 @@ package io.patriot_framework.virtualsmarthomeplus.DTOs;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotEmpty;
@@ -12,6 +13,7 @@ import java.util.Objects;
  */
 @Getter
 @Setter
+@NoArgsConstructor
 public class ThermometerDTO extends DeviceDTO {
 
     /**
@@ -25,7 +27,8 @@ public class ThermometerDTO extends DeviceDTO {
 
     private Float temperature;
 
-    public ThermometerDTO() {
+    public ThermometerDTO(String label) {
+        super(label);
     }
 
     @Override
@@ -33,12 +36,11 @@ public class ThermometerDTO extends DeviceDTO {
         if (this == o) return true;
         if (!(o instanceof final ThermometerDTO that)) return false;
         if (!super.equals(o)) return false;
-        return Objects.equals(getDeviceType(), that.getDeviceType())
-                && Objects.equals(getUnit(), that.getUnit());
+        return Objects.equals(getUnit(), that.getUnit());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), getDeviceType(), getUnit(), getTemperature());
+        return Objects.hash(super.hashCode(), this.getClass().getName(), getUnit(), getTemperature());
     }
 }

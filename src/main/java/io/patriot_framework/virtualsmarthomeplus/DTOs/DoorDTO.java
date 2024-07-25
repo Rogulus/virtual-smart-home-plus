@@ -28,12 +28,11 @@ public class DoorDTO extends DeviceDTO {
         if (this == o) return true;
         if (!(o instanceof final DoorDTO doorDTO)) return false;
         if (!super.equals(o)) return false;
-        return Objects.equals(getDeviceType(), doorDTO.getDeviceType())
-                && Objects.equals(getStatus(), doorDTO.getStatus());
+        return Objects.equals(getStatus(), doorDTO.getStatus());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), getDeviceType(), getStatus());
+        return Objects.hash(super.hashCode(), this.getClass().getName(), getStatus());
     }
 }

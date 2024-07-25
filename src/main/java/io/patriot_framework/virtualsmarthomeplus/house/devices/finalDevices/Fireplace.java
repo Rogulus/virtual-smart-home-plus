@@ -3,6 +3,8 @@ package io.patriot_framework.virtualsmarthomeplus.house.devices.finalDevices;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.patriot_framework.generator.device.active.ActiveDevice;
+import io.patriot_framework.generator.device.impl.basicActuators.BinaryActuator;
 import io.patriot_framework.virtualsmarthomeplus.DTOs.DeviceDTO;
 import io.patriot_framework.virtualsmarthomeplus.DTOs.FireplaceDTO;
 import io.patriot_framework.virtualsmarthomeplus.house.House;
@@ -20,6 +22,8 @@ public class Fireplace extends Device {
     public static final String EXTINGUISHED = "extinguished";
     private static final Logger LOGGER = LoggerFactory.getLogger(House.class);
     private Boolean onFire = false;
+    private BinaryActuator actuator;
+
 
     /**
      * Creates new fireplace with given label.
@@ -29,6 +33,8 @@ public class Fireplace extends Device {
     @JsonCreator
     public Fireplace(String label) {
         super(label);
+        actuator = new BinaryActuator(label);
+        actuator.registerToCoapServer();
     }
 
     /**
@@ -42,6 +48,7 @@ public class Fireplace extends Device {
     public Fireplace(Fireplace origFireplace, String newLabel) {
         super(origFireplace, newLabel);
         onFire = origFireplace.onFire;
+        actuator = new BinaryActuator(newLabel);
     }
 
     /**
@@ -50,6 +57,7 @@ public class Fireplace extends Device {
     public void fireUp() {
         if (!onFire) {
             onFire = true;
+            actuator.controlSignal("On");
             LOGGER.debug(String.format("Fireplace %s fired up", getLabel()));
         }
     }
@@ -60,6 +68,7 @@ public class Fireplace extends Device {
     public void extinguish() {
         if (onFire) {
             onFire = false;
+            actuator.controlSignal("Off");
             LOGGER.debug(String.format("Fireplace %s extinguished", getLabel()));
         }
     }

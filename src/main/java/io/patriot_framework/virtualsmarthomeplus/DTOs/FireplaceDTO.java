@@ -2,6 +2,7 @@ package io.patriot_framework.virtualsmarthomeplus.DTOs;
 
 import io.patriot_framework.virtualsmarthomeplus.house.devices.finalDevices.Fireplace;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Objects;
@@ -11,6 +12,7 @@ import java.util.Objects;
  */
 @Getter
 @Setter
+@NoArgsConstructor
 public class FireplaceDTO extends DeviceDTO {
 
     /**
@@ -21,7 +23,8 @@ public class FireplaceDTO extends DeviceDTO {
     private String status;
 
 
-    public FireplaceDTO() {
+    public FireplaceDTO(String label) {
+        super(label);
     };
 
     @Override
@@ -29,12 +32,18 @@ public class FireplaceDTO extends DeviceDTO {
         if (this == o) return true;
         if (!(o instanceof final FireplaceDTO that)) return false;
         if (!super.equals(o)) return false;
-        return Objects.equals(getDeviceType(), that.getDeviceType())
-                && Objects.equals(getStatus(), that.getStatus());
+        return Objects.equals(getStatus(), that.getStatus());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), getDeviceType(), getStatus());
+        return Objects.hash(super.hashCode(), this.getClass().getName(), getStatus());
+    }
+
+    public void setOnFire () {
+        status = "on_fire";
+    }
+    public void extinguish() {
+        status = "extinguished";
     }
 }

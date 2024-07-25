@@ -54,7 +54,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         @Test
         public void shouldFetchDevice() throws Exception {
             ObjectMapper objectMapper = new ObjectMapper();
-            ThermometerDTO ThermometerDTO = (ThermometerDTO) dtoMapper.map(house.getDevice("thermometer1"));
+            ThermometerDTO thermometerDTO = (ThermometerDTO) dtoMapper.map(house.getDevice("thermometer1"));
             MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders.get("/api/v0.1/house/device/thermometer/thermometer1")
                             .accept(MediaType.APPLICATION_JSON))
                     .andDo(print())
@@ -64,7 +64,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
             String responseBody = result.getResponse().getContentAsString();
             ThermometerDTO responseDTO = objectMapper.readValue(responseBody, ThermometerDTO.class);
 
-            assertEquals(ThermometerDTO, responseDTO);
+            assertEquals(thermometerDTO, responseDTO);
 
 
         }

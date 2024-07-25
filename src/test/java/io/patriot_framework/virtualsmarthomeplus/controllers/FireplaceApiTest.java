@@ -51,11 +51,6 @@ public class FireplaceApiTest {
     public void shouldFetchDevice() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
         FireplaceDTO FireplaceDTO = (FireplaceDTO) dtoMapper.map(house.getDevice("fireplace1"));
-        System.out.println("SDSDDSSDSD");
-        System.out.println(FireplaceDTO.getLabel());
-        System.out.println(FireplaceDTO.getStatus());
-        System.out.println(FireplaceDTO.getEnabled());
-        System.out.println(FireplaceDTO.getDeviceType());
         MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders.get("/api/v0.1/house/device/fireplace/fireplace1")
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -64,13 +59,6 @@ public class FireplaceApiTest {
 
         String responseBody = result.getResponse().getContentAsString();
         FireplaceDTO responseDTO = objectMapper.readValue(responseBody, FireplaceDTO.class);
-
-        System.out.println(responseBody);
-        System.out.println("SDSDDSSDSD");
-        System.out.println(responseDTO.getLabel());
-        System.out.println(responseDTO.getStatus());
-        System.out.println(responseDTO.getEnabled());
-        System.out.println(responseDTO.getDeviceType());
         Assertions.assertEquals(Fireplace.EXTINGUISHED, FireplaceDTO.getStatus());
 
         assertEquals(FireplaceDTO, responseDTO);
@@ -80,7 +68,7 @@ public class FireplaceApiTest {
     public void shouldPostFireplace() throws Exception {
         FireplaceDTO fireplace = new FireplaceDTO();
         fireplace.setLabel("fireplace2");
-        fireplace.setDeviceType("io.patriot_framework.virtualsmarthomeplus.DTOs.FireplaceDTO");
+//        fireplace.setDeviceType("io.patriot_framework.virtualsmarthomeplus.DTOs.FireplaceDTO"); todo
         fireplace.setStatus(Fireplace.EXTINGUISHED);
         fireplace.setEnabled(false);
 
@@ -109,7 +97,7 @@ public class FireplaceApiTest {
     public void shouldUpdateFireplace() throws Exception {
         FireplaceDTO fireplace = new FireplaceDTO();
         fireplace.setLabel("fireplace1");
-        fireplace.setDeviceType("io.patriot_framework.virtualsmarthomeplus.DTOs.FireplaceDTO");
+//        fireplace.setDeviceType("io.patriot_framework.virtualsmarthomeplus.DTOs.FireplaceDTO"); todo
         fireplace.setStatus(Fireplace.ON_FIRE);
         ObjectMapper objectMapper = new ObjectMapper();
         this.mockMvc.perform(MockMvcRequestBuilders.put("/api/v0.1/house/device/fireplace/fireplace1")
@@ -170,7 +158,7 @@ public class FireplaceApiTest {
     public void deviceAlreadyExists() throws Exception {
         FireplaceDTO fireplace = new FireplaceDTO();
         fireplace.setLabel("fireplace1");
-        fireplace.setDeviceType("io.patriot_framework.virtualsmarthomeplus.DTOs.FireplaceDTO");
+//        fireplace.setDeviceType("io.patriot_framework.virtualsmarthomeplus.DTOs.FireplaceDTO"); todo
         fireplace.setEnabled(false);
 
         ObjectMapper objectMapper = new ObjectMapper();
