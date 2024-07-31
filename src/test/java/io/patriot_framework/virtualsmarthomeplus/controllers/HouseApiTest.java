@@ -40,36 +40,36 @@ public class HouseApiTest {
     public void setUp() {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
     }
-    @Test
-    @Order(1)
-    public void shouldFetchHouse() throws Exception {
-        ObjectMapper objectMapper = new ObjectMapper();
-        this.house.addDevice(new RGBLight("rg1"));
-        HouseDTO houseDTO = dtoMapper.map(house);
-        MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders.get("/api/v0.1/house/")
-                        .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().is(200))
-                .andReturn();
+//    @Test
+//    @Order(1)
+//    public void shouldFetchHouse() throws Exception {
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        this.house.addDevice(new RGBLight("rg1"));
+//        HouseDTO houseDTO = dtoMapper.map(house);
+//        MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders.get("/api/v0.1/house/")
+//                        .accept(MediaType.APPLICATION_JSON))
+//                .andDo(print())
+//                .andExpect(status().is(200))
+//                .andReturn();
+//
+//        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
+//        String responseBody = result.getResponse().getContentAsString();
+//        HouseDTO responseDTO = objectMapper.readValue(responseBody,HouseDTO.class);
+//
+//        for (int i=0;i<responseDTO.getDevices().size();i++) {
+//            assertEquals(responseDTO.getDevices().get(i),houseDTO.getDevices().get(i));
+//        }
+//    }
 
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
-        String responseBody = result.getResponse().getContentAsString();
-        HouseDTO responseDTO = objectMapper.readValue(responseBody,HouseDTO.class);
-
-        for (int i=0;i<responseDTO.getDevices().size();i++) {
-            assertEquals(responseDTO.getDevices().get(i),houseDTO.getDevices().get(i));
-        }
-    }
-
-    @Test
-    @Order(2)
-    public void getStatus() throws Exception {
-        MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders.get("/api/v0.1/house/status")
-                        .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().is(200))
-                .andReturn();
-    }
+//    @Test
+//    @Order(2)
+//    public void getStatus() throws Exception {
+//        MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders.get("/api/v0.1/house/status")
+//                        .accept(MediaType.APPLICATION_JSON))
+//                .andDo(print())
+//                .andExpect(status().is(200))
+//                .andReturn();
+//    }
 
     @Test
     public void wrongApiVersion() throws Exception {

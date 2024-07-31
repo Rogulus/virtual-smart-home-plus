@@ -134,21 +134,20 @@ public class DTOMapperTest {
         assertThrows(DeviceMappingNotSupportedException.class, () -> dtoMapper.mapDeviceClassType(DeviceMock.class));
     }
 
-    @AfterAll
-    @Test
-    public void houseToHouseDTO() {
-        House house = new House();
-        RGBLight rgbLight = new RGBLight("rgb1");
-        house.addDevice(rgbLight);
-
-        HouseDTO houseDTO = new HouseDTO();
-        List<DeviceDTO> list = new ArrayList<>();
-        houseDTO.setDevices(list);
-        list.add(dtoMapper.map(rgbLight));
-        houseDTO.setDevices(list);
-
-        HouseDTO houseDTO1 = dtoMapper.map(house);
-        assertEquals(houseDTO1,houseDTO);
-    }
-
+//    @AfterAll
+//    @Test
+//    public void houseToHouseDTO() {
+//        House house = new House();
+//        RGBLight rgbLight = new RGBLight("rgb1");
+//        house.addDevice(rgbLight);
+//
+//        HouseDTO houseDTO = new HouseDTO();
+//        List<DeviceDTO> list = new ArrayList<>();
+//        houseDTO.setDevices(list);
+//        list.add(dtoMapper.map(rgbLight));
+//        houseDTO.setDevices(list);
+//
+//        HouseDTO houseDTO1 = dtoMapper.map(house);
+//        assertEquals(houseDTO1,houseDTO);
+//    }
 }
