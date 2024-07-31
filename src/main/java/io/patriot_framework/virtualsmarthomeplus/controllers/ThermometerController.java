@@ -6,6 +6,8 @@ import io.patriot_framework.virtualsmarthomeplus.DTOs.DeviceDTO;
 import io.patriot_framework.virtualsmarthomeplus.DTOs.ThermometerDTO;
 import io.patriot_framework.virtualsmarthomeplus.house.House;
 import io.patriot_framework.virtualsmarthomeplus.house.devices.finalDevices.Thermometer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,7 @@ import javax.validation.constraints.NotNull;
 
 @RestController
 public class ThermometerController extends FinalDeviceHandling {
+    public static Logger LOGGER = LoggerFactory.getLogger(ThermometerController.class);
     public static final String THERMOMETER_ID_ROUTE = APIRoutes.THERMOMETER_ROUTE + "/{label}";
 
     public static final String THERMOMETER_GET_TEMPERATURE = THERMOMETER_ID_ROUTE + "/getTemperature";

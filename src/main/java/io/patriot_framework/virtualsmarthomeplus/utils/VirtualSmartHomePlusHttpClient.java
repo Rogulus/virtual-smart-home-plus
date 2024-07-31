@@ -32,7 +32,7 @@ public class VirtualSmartHomePlusHttpClient {
         this.port = port;
     }
 
-    public void putDevice(String deviceType, DeviceDTO device) { // todo melo by to brat Device DTO
+    public void putDevice(String deviceType, DeviceDTO device) {
 //        device.setDeviceType(device.getClass().getName());
         ObjectMapper mapper = new ObjectMapper();
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
@@ -47,13 +47,9 @@ public class VirtualSmartHomePlusHttpClient {
 
             // Execute the request
             try (CloseableHttpResponse response = httpClient.execute(httpPut)) {
-                // Handle the response if needed
                 int statusCode = response.getStatusLine().getStatusCode();
-                System.out.println("Response status: " + statusCode);
 
-                // Optionally handle the response body, headers, etc.
                 String responseBody = EntityUtils.toString(response.getEntity(), "UTF-8");
-                System.out.println("Response body: " + responseBody);
                 Thermometer t;
 
             }

@@ -2,10 +2,7 @@ package io.patriot_framework.virtualsmarthomeplus.factory;
 
 import io.patriot_framework.virtualsmarthomeplus.DTOs.DeviceDTO;
 import io.patriot_framework.virtualsmarthomeplus.house.devices.Device;
-import io.patriot_framework.virtualsmarthomeplus.house.devices.finalDevices.Door;
-import io.patriot_framework.virtualsmarthomeplus.house.devices.finalDevices.Fireplace;
-import io.patriot_framework.virtualsmarthomeplus.house.devices.finalDevices.RGBLight;
-import io.patriot_framework.virtualsmarthomeplus.house.devices.finalDevices.Thermometer;
+import io.patriot_framework.virtualsmarthomeplus.house.devices.finalDevices.*;
 
 /**
  * Class for creation of Devices
@@ -27,7 +24,9 @@ public class DeviceFactory {
             case "ThermometerDTO" -> new Thermometer(device.getLabel());
             case "FireplaceDTO" -> new Fireplace(device.getLabel());
             case "DoorDTO" -> new Door(device.getLabel());
-            default -> throw new IllegalArgumentException();
+            case "AutomaticDoorDTO" -> new AutomaticDoor(device.getLabel());
+            default -> throw new IllegalArgumentException(
+                    "Device factory does not have rule for creating such device type");
         };
     }
 }

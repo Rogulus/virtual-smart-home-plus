@@ -5,7 +5,10 @@ import io.patriot_framework.virtualsmarthomeplus.Mapper.DTOMapper;
 import io.patriot_framework.virtualsmarthomeplus.factory.DeviceFactory;
 import io.patriot_framework.virtualsmarthomeplus.house.House;
 import io.patriot_framework.virtualsmarthomeplus.house.devices.Device;
+import io.patriot_framework.virtualsmarthomeplus.house.devices.finalDevices.Thermometer;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -15,6 +18,7 @@ import java.util.NoSuchElementException;
 
 @Component
 public class FinalDeviceHandling {
+    public static Logger LOGGER = LoggerFactory.getLogger(FinalDeviceHandling.class);
 
     /**
      * string that will be returned after successful deletion
@@ -39,7 +43,6 @@ public class FinalDeviceHandling {
     public DeviceDTO handleGet(String label, Class<? extends Device> deviceClass)
             throws NoSuchElementException, IllegalArgumentException {
         final Device retrievedDevice = house.getDeviceOfType(deviceClass, label);
-        System.out.println();
 
         if (retrievedDevice == null) {
             throw new NoSuchElementException("Device not found!");

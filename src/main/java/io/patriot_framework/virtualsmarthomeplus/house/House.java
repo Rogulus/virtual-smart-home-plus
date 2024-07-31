@@ -1,6 +1,10 @@
 package io.patriot_framework.virtualsmarthomeplus.house;
 
+import io.patriot_framework.generator.dataFeed.ConstantDataFeed;
+import io.patriot_framework.generator.dataFeed.DataFeed;
 import io.patriot_framework.virtualsmarthomeplus.house.devices.Device;
+import io.patriot_framework.virtualsmarthomeplus.house.devices.finalDevices.AutomaticDoor;
+import io.patriot_framework.virtualsmarthomeplus.house.devices.finalDevices.Thermometer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -22,6 +26,16 @@ public class House {
     private final Map<String, Device> devices = new ConcurrentHashMap<>();
 
     public House() {
+        addDevice(new Thermometer("thermometer1"));
+        addDevice(new Thermometer("thermometer2"));
+        addDevice(new Thermometer("thermometer3"));
+        addDevice(new Thermometer("thermometer4"));
+        addDevice(new Thermometer("thermometer5"));
+        addDevice(new Thermometer("thermometer6"));
+        addDevice(new Thermometer("thermometer7"));
+
+        addDevice(new AutomaticDoor("automaticDoor1"));
+        addDevice(new AutomaticDoor("automaticDoor2"));
     }
 
     /**

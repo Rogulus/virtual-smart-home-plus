@@ -25,7 +25,7 @@ public class ThermometerDTO extends DeviceDTO {
      * value of actual temperature
      */
 
-    private Float temperature;
+    public Float temperature;
 
     public ThermometerDTO(String label) {
         super(label);

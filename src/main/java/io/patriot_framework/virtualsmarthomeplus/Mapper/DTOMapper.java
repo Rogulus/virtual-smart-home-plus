@@ -1,17 +1,9 @@
 package io.patriot_framework.virtualsmarthomeplus.Mapper;
 
+import io.patriot_framework.virtualsmarthomeplus.DTOs.*;
 import io.patriot_framework.virtualsmarthomeplus.house.House;
 import io.patriot_framework.virtualsmarthomeplus.house.devices.Device;
-import io.patriot_framework.virtualsmarthomeplus.house.devices.finalDevices.Fireplace;
-import io.patriot_framework.virtualsmarthomeplus.house.devices.finalDevices.RGBLight;
-import io.patriot_framework.virtualsmarthomeplus.DTOs.ThermometerDTO;
-import io.patriot_framework.virtualsmarthomeplus.DTOs.HouseDTO;
-import io.patriot_framework.virtualsmarthomeplus.DTOs.RGBLightDTO;
-import io.patriot_framework.virtualsmarthomeplus.DTOs.DeviceDTO;
-import io.patriot_framework.virtualsmarthomeplus.DTOs.DoorDTO;
-import io.patriot_framework.virtualsmarthomeplus.DTOs.FireplaceDTO;
-import io.patriot_framework.virtualsmarthomeplus.house.devices.finalDevices.Door;
-import io.patriot_framework.virtualsmarthomeplus.house.devices.finalDevices.Thermometer;
+import io.patriot_framework.virtualsmarthomeplus.house.devices.finalDevices.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeMap;
 import org.springframework.stereotype.Component;
@@ -32,6 +24,7 @@ public class DTOMapper {
         CLASS_TO_DTO.put(Device.class, DeviceDTO.class);
         CLASS_TO_DTO.put(Fireplace.class, FireplaceDTO.class);
         CLASS_TO_DTO.put(Door.class, DoorDTO.class);
+        CLASS_TO_DTO.put(AutomaticDoor.class, AutomaticDoorDTO.class);
         CLASS_TO_DTO.put(Thermometer.class, ThermometerDTO.class);
         CLASS_TO_DTO.put(RGBLight.class, RGBLightDTO.class);
     }
@@ -41,6 +34,7 @@ public class DTOMapper {
         DTO_TO_CLASS.put(DeviceDTO.class, Device.class);
         DTO_TO_CLASS.put(FireplaceDTO.class, Fireplace.class);
         DTO_TO_CLASS.put(DoorDTO.class, Door.class);
+        DTO_TO_CLASS.put(AutomaticDoorDTO.class, AutomaticDoor.class);
         DTO_TO_CLASS.put(ThermometerDTO.class, Thermometer.class);
         DTO_TO_CLASS.put(RGBLightDTO.class, RGBLight.class);
 
@@ -67,6 +61,12 @@ public class DTOMapper {
         doorTypeMap.setProvider(request -> {
             final DoorDTO doorDTO = (DoorDTO) request.getSource();
             return new Door(doorDTO.getLabel());
+        });
+
+        final TypeMap<AutomaticDoorDTO, AutomaticDoor> automaticDoorTypeMap = this.modelMapper.createTypeMap(AutomaticDoorDTO.class, AutomaticDoor.class);
+        automaticDoorTypeMap.setProvider(request -> {
+            final AutomaticDoorDTO automaticDoorDTO = (AutomaticDoorDTO) request.getSource();
+            return new AutomaticDoor(automaticDoorDTO.getLabel());
         });
 
         final TypeMap<RGBLightDTO, RGBLight> rgbLightTypeMap = this.modelMapper.createTypeMap(
